@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link href="stylesheets/normalize.css" rel="stylesheet" type="text/css" />
+    <link href="stylesheets/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="stylesheets/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="stylesheets/angular-date-picker.css" rel="stylesheet" type="text/css" />
+    
+    <script src="javascripts/jquery.js" type="text/javascript"></script>
+    <script src="javascripts/moment.js" type="text/javascript"></script>
+    <script src="javascripts/angular.js" type="text/javascript"></script>
+    <script src="javascripts/angular-date-picker.js" type="text/javascript"></script>
+    <script src="javascripts/scripts.js" type="text/javascript"></script>
+
+    <style type="text/css">
+        div.date-picker-container-inline {
+            margin-top: 3px;
+        }
+    </style>
+</head>
+<body ng-app="mainApp">
+    <div style="width:900px; padding: 10px; height: 100%">
+
+        <div style="margin-top: 10px" ng-controller="OnFocusController as vm">
+            <h3>Example 1: Show on Focus</h3>
+            <div>
+                <input type="text"
+                       ng-model="vm.date"
+                       class="form-control"
+                       style="width:20%"
+                       angular-date-picker="vm.datePickerOptions" />
+            </div>
+        </div>
+
+        <div style="margin-top: 350px" ng-controller="InlineController as vm">
+            <h3>Example 2: Inline</h3>
+            <div>
+                <input type="text"
+                       ng-model="vm.date"
+                       class="form-control"
+                       style="width:20%"
+                       angular-date-picker="vm.datePickerOptions" />
+            </div>
+        </div>
+
+        <div style="margin-top: 10px" ng-controller="InlineOtherMonthDatesController as vm">
+            <h3>Example 3: Display Dates from Previous and Next Months</h3>
+            <div>
+                <input type="text"
+                       ng-model="vm.date"
+                       class="form-control"
+                       style="width:20%"
+                       angular-date-picker="vm.datePickerOptions" />
+            </div>
+        </div>
+
+        <div style="margin-top: 10px" ng-controller="InlineDisabledDatesController as vm">
+            <h3>Example 4: Disabled Dates</h3>
+            <div>
+                <input type="text"
+                       ng-model="vm.date"
+                       class="form-control"
+                       style="width:20%"
+                       angular-date-picker="vm.datePickerOptions" />
+                <!--<div id="datePickerParent3" style="margin-top:3px;"></div>-->
+            </div>
+        </div>
+
+        <div style="height:200px">
+        </div>
+    </div>
+</body>
+</html>

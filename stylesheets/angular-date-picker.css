@@ -1,0 +1,104 @@
+div.date-picker-container {
+    width: 320px;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    border: solid 1px #6699FF;
+    background-color: White;
+    white-space: nowrap;
+    padding: 2px;
+}
+
+div.date-picker-absolute-container {
+    position: absolute;
+    z-index: 10000;
+}
+
+div.date-picker-container > div.top-panel {
+    text-align: center;
+    padding: 10px 8px;
+}
+
+    div.date-picker-container > div.top-panel > table.calendar {
+        width: 100%;
+        white-space: nowrap;
+    }
+
+    div.date-picker-container > div.top-panel a.prev,
+    div.date-picker-container > div.top-panel a.next {
+        display: inline-block;
+        text-decoration: none;
+        color: Black;
+    }
+
+    div.date-picker-container > div.top-panel a.next {
+        margin-left: 15px;
+    }
+
+    div.date-picker-container > div.top-panel select {
+        border: 1px solid #CCCCCC;
+        font-size: 15px;
+    }
+
+        div.date-picker-container > div.top-panel select.years {
+            margin-left: 5px;
+        }
+
+div.date-picker-container > div.middle-panel > table.calendar {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    div.date-picker-container > div.middle-panel > table.calendar > thead > tr > th {
+        border: solid 1px #CCCCCC;
+        border-color: #CCCCCC transparent;
+        background-color: transparent;
+        padding: 8px;
+        color: Black;
+        text-align: center;
+    }
+
+    div.date-picker-container > div.middle-panel > table.calendar > tbody > tr.week-row > td,
+    div.date-picker-container > div.middle-panel > table.calendar > tbody > tr.week-row-placeholder > td {
+        text-align: center;
+        border: solid 1px transparent;
+        background-color: transparent;
+        padding: 2px;
+    }
+
+        div.date-picker-container > div.middle-panel > table.calendar > tbody > tr.week-row > td.date-visible {
+            cursor: pointer;
+        }
+
+            div.date-picker-container > div.middle-panel > table.calendar > tbody > tr.week-row > td.date-visible:hover,
+            div.date-picker-container > div.middle-panel > table.calendar > tbody > tr.week-row > td.date-selected {
+                color: white;
+                background-color: red;
+            }
+
+            div.date-picker-container > div.middle-panel > table.calendar > tbody > tr.week-row > td.date-visible.date-other-month {
+                background-color: transparent;
+                color: darkgray;
+            }
+
+                div.date-picker-container > div.middle-panel > table.calendar > tbody > tr.week-row > td.date-visible.date-other-month:not(.date-disabled):hover {
+                    background-color: #EBEBEB;
+                }
+
+            div.date-picker-container > div.middle-panel > table.calendar > tbody > tr.week-row > td.date-visible.date-disabled {
+                background-color: lightgray;
+                color: darkgray;
+            }
+
+div.date-picker-container > div.bottom-panel {
+    padding: 10px 0px;
+}
+
+    div.date-picker-container > div.bottom-panel > table.calendar > tbody > tr > td {
+        padding: 4px 8px;
+    }
+
+    div.date-picker-container > div.bottom-panel a.today {
+        font-weight: bold;
+        color: Blue;
+        text-decoration: none;
+    }
