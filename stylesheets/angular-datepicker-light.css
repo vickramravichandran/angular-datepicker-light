@@ -21,8 +21,16 @@ div.datepicker-container > div.top-panel {
     div.datepicker-container > div.top-panel > table.calendar {
         width: 100%;
         white-space: nowrap;
+        margin: 0px;
     }
 
+div.datepicker-container > div.top-panel > table.calendar > tbody > tr > td {
+        background-color: transparent;
+    border: 0px;
+    }
+
+
+    
     div.datepicker-container > div.top-panel a.prev,
     div.datepicker-container > div.top-panel a.next {
         display: inline-block;
@@ -45,6 +53,7 @@ div.datepicker-container > div.top-panel {
 
 div.datepicker-container > div.middle-panel > table.calendar {
     width: 100%;
+    margin: 0px;
     border-collapse: collapse;
 }
 
@@ -55,6 +64,10 @@ div.datepicker-container > div.middle-panel > table.calendar {
         padding: 8px;
         color: Black;
         text-align: center;
+    }
+
+    div.datepicker-container > div.middle-panel > table.calendar > tbody > tr > td {
+        background-color: transparent;
     }
 
     div.datepicker-container > div.middle-panel > table.calendar > tbody > tr.week-row > td,
@@ -93,8 +106,17 @@ div.datepicker-container > div.bottom-panel {
     padding: 10px 0px;
 }
 
+    div.datepicker-container > div.bottom-panel > table.calendar {
+        margin: 0px;
+        background-color: transparent;
+        padding: 4px 8px;
+    }
+
+
     div.datepicker-container > div.bottom-panel > table.calendar > tbody > tr > td {
         padding: 4px 8px;
+        background-color: transparent;
+        border: 0px;
     }
 
     div.datepicker-container > div.bottom-panel a.today {

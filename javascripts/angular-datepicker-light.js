@@ -2,7 +2,7 @@
     angular
         .module('datepickerLightModule', [])
         .service('datepickerLightService', datepickerLightService)
-        .directive('angularDatePickerLight', datepickerLightDirective);
+        .directive('angularDatepickerLight', datepickerLightDirective);
 
     datepickerLightDirective.$inject = ["$compile", "$document", "$window", "$timeout", "$templateRequest", "datepickerLightService"];
     function datepickerLightDirective($compile, $document, $window, $timeout, $templateRequest, datepickerLightService) {
@@ -10,12 +10,12 @@
         return {
             restrict: "A",
             scope: {
-                options: '&angularDatePickerLight'
+                options: '&angularDatepickerLight'
             },
             transclude: false,
             controllerAs: "ctrl",
             bindToController: true,
-            require: ["angularDatePickerLight", "?ngModel"],
+            require: ["angularDatepickerLight", "?ngModel"],
             link: postLinkFn,
             controller: MainCtrl
         }
@@ -33,7 +33,7 @@
             // store the jquery element on the controller          
             ctrl.target = element;
 
-            $templateRequest("javascripts/templates/days-view.html")
+            $templateRequest("javascripts/templates/angular-datepicker-light.html")
                 .then(function (template) {
                     initContainer(template);
                 });
@@ -428,7 +428,7 @@
             if (!that.isInline()) {
                 // the textbox position can change (ex: window resize)
                 // so reposition the datepicker before it's shown
-                positionDatePicker();
+                positionDatepicker();
             }
 
             that.containerVisible = true;
@@ -824,7 +824,7 @@
             }
         }
 
-        function positionDatePicker() {
+        function positionDatepicker() {
             if (that.isInline()) {
                 return;
             }
