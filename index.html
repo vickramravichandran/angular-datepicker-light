@@ -99,7 +99,7 @@
     .controller('OnFocusCtrl', function () {
         var vm = this;
         
-        vm.date = dateText;
+        vm.date = moment(new Date()).format("MM/DD/YYYY");
         vm.datepickerOptions = {
             altTarget: $("#calendarIcon")
         };
@@ -142,7 +142,7 @@
     function InlineCtrl(){
         var vm = this;
         
-        vm.date = dateText;
+        vm.date = moment(new Date()).format("MM/DD/YYYY");
         
         vm.datepickerOptions = {
             inline: true
@@ -184,10 +184,9 @@
     .controller('InlineDisabledDatesCtrl', InlineDisabledDatesCtrl);
     
     function InlineDisabledDatesCtrl() {
-        var vm = this;
-        
-        vm.date = dateText;
-        
+        var vm = this;        
+        vm.date = moment(new Date()).format("MM/DD/YYYY");
+            
         vm.datepickerOptions = {
             inline: true,
             renderDate: function (e) {
@@ -238,7 +237,7 @@
     function InlineOtherMonthDatesCtrl() {
         var vm = this;
         
-        vm.date = dateText;
+        vm.date = moment(new Date()).format("MM/DD/YYYY");
         
         vm.datepickerOptions = {
             inline: true,
@@ -325,7 +324,7 @@
     function InlineDivTargetCtrl() {
         var vm = this;
         
-        vm.date = dateText;
+        vm.date = moment(new Date()).format("MM/DD/YYYY");
         
         vm.datepickerOptions = {
             inline: true,

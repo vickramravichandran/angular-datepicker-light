@@ -989,9 +989,7 @@
         },
         renderDate: {
             def: "noop",
-            doc: "Callback when the calendar is being rendered. This is called for each date in the calendar. \
-                    The function receives an object with 'date' as parameter. \
-                    Return a object with 'cssClass', 'enabled':(true/false)', 'selected:(true/false)', 'tooltip' and 'data' to store any arbitrary data on the date cell."
+            doc: "Callback when the calendar is being rendered. This is called for each date in the calendar. The function receives an object with 'date' as parameter. Return a object with 'cssClass', 'enabled':(true/false)', 'selected:(true/false)', 'tooltip' and 'data' to store any arbitrary data on the date cell."
         },
         beforeDateSelect: {
             def: "noop",
