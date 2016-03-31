@@ -5,8 +5,8 @@
         .module('mainApp', ['datepickerLightModule'])
         .controller('OnFocusCtrl', OnFocusCtrl)
         .controller('InlineCtrl', InlineCtrl)
-        .controller('InlineOtherMonthDatesCtrl', InlineOtherMonthDatesCtrl)
         .controller('InlineDisabledDatesCtrl', InlineDisabledDatesCtrl)
+        .controller('InlineOtherMonthDatesCtrl', InlineOtherMonthDatesCtrl)
         .controller('InlineCustomWeekStartCtrl', InlineCustomWeekStartCtrl)
         .controller('InlineDivTargetCtrl', InlineDivTargetCtrl);
 
@@ -18,6 +18,9 @@
     function OnFocusCtrl() {
         var vm = this;
         vm.date = dateText;
+        vm.datepickerOptions = {
+            altTarget: $("#calendarIcon")
+        };
     }
 
     // inline
@@ -28,6 +31,27 @@
         vm.datepickerOptions = {
             inline: true,
             containerCssClass: "datepicker-container-inline"
+        };
+    }
+    
+    // inline, disabled dates, tooltip
+    function InlineDisabledDatesCtrl() {
+        var vm = this;
+
+        vm.date = dateText;
+
+        vm.datepickerOptions = {
+            inline: true,
+            containerCssClass: "datepicker-container-inline",
+            renderDate: function (e) {
+                var date = e.date.getDate();
+
+                var enable = (date < 5 || date > 15);
+                return {
+                    enabled: enable,
+                    tooltip: enable ? null : "We are closed!"
+                }
+            }
         };
     }
 
@@ -56,28 +80,7 @@
             containerCssClass: "datepicker-container-inline"
         };
     }
-
-    // inline, disabled dates, tooltip
-    function InlineDisabledDatesCtrl() {
-        var vm = this;
-
-        vm.date = dateText;
-
-        vm.datepickerOptions = {
-            inline: true,
-            containerCssClass: "datepicker-container-inline",
-            renderDate: function (e) {
-                var date = e.date.getDate();
-
-                var enable = (date < 5 || date > 15);
-                return {
-                    enabled: enable,
-                    tooltip: enable ? null : "We are closed!"
-                }
-            }
-        };
-    }
-
+    
     function InlineDivTargetCtrl() {
         var vm = this;
 

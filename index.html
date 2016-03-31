@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="stylesheets/angular-datepicker-light.css" />
     <link rel="stylesheet" href="stylesheets/styles.css" />
 
-    <!--<script type="text/javascript" src="javascripts/jquery.js"></script>-->
+    <script type="text/javascript" src="javascripts/jquery.js"></script>
 
     <script type="text/javascript" src="javascripts/prism.js"></script>
 
@@ -44,28 +44,28 @@
                 <a href="https://github.com/vickramravichandran/angular-datepicker-light" class="icon icon-github-circled"></a>
                 <a href="https://www.linkedin.com/in/vickramravichandran" class="icon icon-linkedin"></a>
             </div>
+
+            <div class="npm-links">
+                <div style="margin-top:20px">
+                    <code>npm   install angular-datepicker-light</code>
+                </div>
+                <div style="margin-top:5px">
+                    <code>bower install angular-datepicker-light</code>
+                </div>
+            </div>
         </header>
     </div>
     <div class="content">
         <main role="main">
             <article class="post" role="article" itemscope="" itemtype="http://schema.org/Article">
                 <h1 class="post-title">AngularJS datepicker-light plugin</h1>
-                
-                <div>
-                    <div style="margin-top:20px">
-                        <code>npm install angular-datepicker-light</code>
-                    </div>
-                    <div style="margin-top:5px">
-                        <code>bower install angular-datepicker-light</code>
-                    </div>
-                </div>
-                
+
                 <div style="margin-top:20px; padding: 10px 0px">
                     <a role="button" class="btn btn-primary btn-lg" href="https://github.com/vickramravichandran/angular-datepicker-light/archive/demo.zip">Download</a>
                     <a role="button" class="btn btn-primary btn-lg" target="_blank" href="https://github.com/vickramravichandran/angular-datepicker-light">Source</a>
                     <a role="button" class="btn btn-primary btn-lg" href="#options">Options</a>
                 </div>
-                
+
                 <div class="container-fluid">
 
                     <div class="row">
@@ -76,7 +76,8 @@
                                     <input type="text"
                                            ng-model="vm.date"
                                            class="form-control"
-                                           angular-datepicker-light/>
+                                           angular-datepicker-light="vm.datepickerOptions" />
+                                    <span id="calendarIcon" class="fa fa-calendar"></span>
                                 </div>
                             </div>
                             <div class="code-container">
@@ -85,6 +86,7 @@
 <pre><code class="language-markup">&lt;body ng-app="mainApp">
     &lt;div ng-controller="OnFocusCtrl as vm">
         &lt;input type="text" ng-model="vm.date" />
+        &lt;span id="calendarIcon" class="fa fa-calendar"&gt;&lt;/span>
     &lt;/div>
 &lt;/body>
 </code></pre>
@@ -97,6 +99,9 @@
         var vm = this;
         
         vm.date = dateText;
+        vm.datepickerOptions = {
+            altTarget: $("#calendarIcon")
+        };
     });
 </code></pre>
                                 </div>
@@ -141,51 +146,6 @@
         vm.datepickerOptions = {
             inline: true
         };
-    }
-</code></pre>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="scenario">
-                            <div ng-controller="InlineOtherMonthDatesCtrl as vm">
-                                <h3 class="config-title">Example 3: Dates from Other Months</h3>
-                                <div>
-                                    <input type="text"
-                                           ng-model="vm.date"
-                                           class="form-control"
-                                           angular-datepicker-light="vm.datepickerOptions" />
-                                </div>
-                            </div>
-                            <div class="code-container">
-                                <h6>HTML</h6>
-                                <div>
-<pre><code class="language-markup">&lt;body ng-app="mainApp">
-    &lt;div ng-controller="InlineOtherMonthDatesCtrl as vm">
-        &lt;input type="text"
-               ng-model="vm.date"   
-               angular-datepicker-light="vm.datepickerOptions" />
-    &lt;/div>
-&lt;/body>
-</code></pre>
-                                </div>
-                                <div>
-                                    <h6>JavaScript</h6>
-<pre><code class="language-javascript">angular
-    .module('mainApp', ['datepickerLightModule'])
-    .controller('InlineOtherMonthDatesCtrl', InlineOtherMonthDatesCtrl);
-    
-    function InlineOtherMonthDatesCtrl() {
-        var vm = this;
-        
-        vm.date = dateText;
-        
-        vm.datepickerOptions = {
-            inline: true,
-            showOtherMonthDates: true
-        };        
     }
 </code></pre>
                                 </div>
@@ -245,7 +205,51 @@
                         </div>
                     </div>
 
-                    
+                    <div class="row">
+                        <div class="scenario">
+                            <div ng-controller="InlineOtherMonthDatesCtrl as vm">
+                                <h3 class="config-title">Example 3: Dates in Other Months</h3>
+                                <div>
+                                    <input type="text"
+                                           ng-model="vm.date"
+                                           class="form-control"
+                                           angular-datepicker-light="vm.datepickerOptions" />
+                                </div>
+                            </div>
+                            <div class="code-container">
+                                <h6>HTML</h6>
+                                <div>
+<pre><code class="language-markup">&lt;body ng-app="mainApp">
+    &lt;div ng-controller="InlineOtherMonthDatesCtrl as vm">
+        &lt;input type="text"
+               ng-model="vm.date"   
+               angular-datepicker-light="vm.datepickerOptions" />
+    &lt;/div>
+&lt;/body>
+</code></pre>
+                                </div>
+                                <div>
+                                    <h6>JavaScript</h6>
+<pre><code class="language-javascript">angular
+    .module('mainApp', ['datepickerLightModule'])
+    .controller('InlineOtherMonthDatesCtrl', InlineOtherMonthDatesCtrl);
+    
+    function InlineOtherMonthDatesCtrl() {
+        var vm = this;
+        
+        vm.date = dateText;
+        
+        vm.datepickerOptions = {
+            inline: true,
+            showOtherMonthDates: true
+        };        
+    }
+</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="row">
                         <div class="scenario">
                             <div ng-controller="InlineCustomWeekStartCtrl as vm">
@@ -290,8 +294,7 @@
                             </div>
                         </div>
                     </div>
-                    
-                    
+
                     <div class="row">
                         <div class="scenario">
                             <div ng-controller="InlineDivTargetCtrl as vm">
@@ -321,7 +324,7 @@
     function InlineDivTargetCtrl() {
         var vm = this;
         
-        vm.date = today;
+        vm.date = dateText;
         
         vm.datepickerOptions = {
             inline: true,

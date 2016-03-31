@@ -1,10 +1,10 @@
 html {
-	font-size: initial;
+    font-size: initial;
 }
 
 h1.post-title {
-	font-size: 2.7em;
-	font-weight: bold;
+    font-size: 2.7em;
+    font-weight: bold;
 }
 
 /*
@@ -14,38 +14,44 @@ h1.post-title {
 */
 
 div.code-container {
-	margin-top: 20px;
+    margin-top: 20px;
 }
 
-	div.code-container h6 {
-		margin-top: 10px;
-	}
+    div.code-container h6 {
+        margin-top: 10px;
+    }
 
 div.scenario {
-	margin-bottom: 30px;
+    margin-bottom: 30px;
 }
 
-	div.scenario input[type=text] {
-		font-weight: bold;
-		background-color: white;
-/*        background-color: rgb(255, 248, 182);*/
+    div.scenario input[type=text] {
+        display: inline-block;
         width: 110px;
-	}
+        font-weight: bold;
+        background-color: white;
+        /*        background-color: rgb(255, 248, 182);*/
+    }
 
 h3.config-title {
-	margin-top: 20px;
+    margin-top: 20px;
 }
 
-        div.datepicker-container-inline {
-            margin-top: 5px;
-        }
+div.datepicker-container-inline {
+    margin-top: 5px;
+}
 
-        div.date-target {
-            width: 320px;
-            font-size: 18px;
-            font-weight: bold;
-            padding: 10px 10px 10px 10px;
-            text-align: center;
-            color: #191717;
-            background-color: rgb(255, 248, 182);
-        }
+div.date-target {
+    width: 320px;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px 10px 10px 10px;
+    text-align: center;
+    color: #191717;
+    background-color: rgb(255, 248, 182);
+}
+
+#calendarIcon {
+    font-size: 25px;
+    margin-left: 5px;
+}

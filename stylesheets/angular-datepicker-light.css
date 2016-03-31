@@ -24,12 +24,12 @@ div.datepicker-container > div.top-panel {
         margin: 0px;
     }
 
-    div.datepicker-container > div.top-panel > table.calendar > tbody > tr > td {
-        background-color: transparent;
-        border: 0px;
-        padding: 0px;
-    }
-    
+        div.datepicker-container > div.top-panel > table.calendar > tbody > tr > td {
+            background-color: transparent;
+            border: 0px;
+            padding: 0px;
+        }
+
     div.datepicker-container > div.top-panel a.prev,
     div.datepicker-container > div.top-panel a.next {
         display: inline-block;
@@ -113,11 +113,11 @@ div.datepicker-container > div.bottom-panel {
     }
 
 
-    div.datepicker-container > div.bottom-panel > table.calendar > tbody > tr > td {
-        padding: 4px 8px;
-        background-color: transparent;
-        border: 0px;
-    }
+        div.datepicker-container > div.bottom-panel > table.calendar > tbody > tr > td {
+            padding: 4px 8px;
+            background-color: transparent;
+            border: 0px;
+        }
 
     div.datepicker-container > div.bottom-panel a.today {
         font-weight: bold;
@@ -149,4 +149,28 @@ div.datepicker-container > div.bottom-panel {
 
 .fa-chevron-right:before {
     content: "\f054";
+}
+
+.fa-calendar:before {
+    content: "\f073";
+}
+
+.fa-calendar-o:before {
+    content: "\f133";
+}
+
+.fa-calendar-plus-o:before {
+    content: "\f271";
+}
+
+.fa-calendar-minus-o:before {
+    content: "\f272";
+}
+
+.fa-calendar-times-o:before {
+    content: "\f273";
+}
+
+.fa-calendar-check-o:before {
+    content: "\f274";
 }

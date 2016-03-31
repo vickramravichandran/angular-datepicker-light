@@ -59,6 +59,17 @@
                     ctrl.container.addClass("datepicker-absolute-container");
                 }
 
+                // if a jquery altTarget is specified in options append the container
+                // altTarget supported only for non-inline
+                if (!ctrl.isInline() && angular.isElement(ctrl.options.altTarget)) {
+                    // focus the textbox when the alt target(ex: image icon) is clicked
+                    ctrl.options.altTarget.on("click focus", function (e) {
+                        scope.$evalAsync(function () {
+                            ctrl.activate();
+                        });
+                    });
+                }
+
                 // prevents text select on mouse drag, dblclick
                 ctrl.container.css("MozUserSelect", "none").bind("selectstart", function () {
                     return false;
@@ -71,7 +82,7 @@
             }
 
             // when the target(textbox) gets focus activate the corresponding container
-            element.on("focus", function (e) {
+            element.on("click focus", function (e) {
                 scope.$evalAsync(function () {
                     ctrl.activate();
                 });
@@ -135,7 +146,7 @@
                 // hide the active calendar if user clicks anywhere away from the dropdown list
                 var offset = ctrl.container[0].getBoundingClientRect();
                 var isMouseAwayFromActiveContainer = false;
-                var awayTolerance = 100;
+                var awayTolerance = 50;
 
                 //check if mouse is over the container
                 if (e.pageX < offset.left - awayTolerance
@@ -153,6 +164,18 @@
                         && e.pageY <= offset.top + offset.height) {
 
                         isMouseAwayFromActiveContainer = false;
+                    }
+
+                    //check if mouse is over the alt target (ex:image icon)
+                    if (angular.isElement(ctrl.options.altTarget)) {
+                        offset = ctrl.options.altTarget[0].getBoundingClientRect();
+                        if (e.pageX >= offset.left
+                            && e.pageX <= offset.left + offset.width
+                            && e.pageY >= offset.top
+                            && e.pageY <= offset.top + offset.height) {
+
+                            isMouseAwayFromActiveContainer = false;
+                        }
                     }
 
                     if (isMouseAwayFromActiveContainer === true) {
@@ -371,10 +394,10 @@
 
             var dateVisible = that.isDateVisible(cellData.date);
 
-            css[that.options.dateVisibleCssClass] = dateVisible;
-            css[that.options.dateOtherMonthCssClass] = dateVisible && that.isOtherMonth(cellData.date);
-            css[that.options.dateSelectedCssClass] = dateVisible && that.isDateSelected(cellData.date);
-            css[that.options.dateDisabledCssClass] = dateVisible && (cellData.enabled === false);
+            css["date-visible"] = dateVisible;
+            css["date-other-month"] = dateVisible && that.isOtherMonth(cellData.date);
+            css["date-selected"] = dateVisible && that.isDateSelected(cellData.date);
+            css["date-disabled"] = dateVisible && (cellData.enabled === false);
 
             // custom css class added in callback
             if (!isUndefinedOrNull(cellData.cssClass)) {
@@ -906,13 +929,7 @@
         maxDate: null,
         firstDayOfWeek: 0,
         showOtherMonthDates: false,
-        //css class
-        containerCssClass: undefined,
-        dateVisibleCssClass: "date-visible",
-        dateSelectedCssClass: "date-selected",
-        dateOtherMonthCssClass: "date-other-month",
-        dateDisabledCssClass: "date-disabled",
-        //callback
+        containerCssClass: null,
         datepickerShown: angular.noop,
         datepickerHidden: angular.noop,
         renderDate: angular.noop,
