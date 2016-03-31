@@ -774,7 +774,8 @@
             }
 
             var cbRetVal = safeCallback(that.options.beforeDateSelect, {
-                date: cellData.date, cancel: false, data: cellData.data
+                date: cellData.date,
+                data: cellData.data
             });
 
             // cancel selection if set to true from callback
@@ -790,7 +791,10 @@
                 updateTargetModel(formatDate(that.selectedData.date));
             }
 
-            safeCallback(that.options.dateSelected, { date: cellData.date, data: cellData.data });
+            safeCallback(that.options.dateSelected, {
+                date: cellData.date,
+                data: cellData.data
+            });
         }
 
 
@@ -871,7 +875,7 @@
                 that.container.position(pos);
             } else {
                 var scrollTop = $document[0].body.scrollTop || $document[0].documentElement.scrollTop || $window.pageYOffset,
-            scrollLeft = $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft || $window.pageXOffset;
+                    scrollLeft = $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft || $window.pageXOffset;
 
                 that.container.css({
                     "left": rect.left + scrollLeft + "px"
@@ -941,23 +945,23 @@
     var defaultOptionsDoc = {
         altTarget: {
             def: "null",
-            doc: "CSS class applied to the selected date cell"
+            doc: "Normally this is the calendar icon jQuery element associated with the datepicker."
         },
         inline: {
             def: "false",
-            doc: "Displays the calendar inline if set to true or jQuery element."
+            doc: "If set to true displays the calendar inline below the target. Alternatively, set to a jQuery element to append the calendar."
         },
         dateFormat: {
             def: "MM/DD/YYYY",
-            doc: "The format for parsed and displayed dates. For a full list of the possible formats see the <a href='http://momentjs.com/docs/#/displaying/format/'><u>momentjs documentation</u></a>"
+            doc: "The date format used to parse and display dates. For a full list of the possible formats see the <a href='http://momentjs.com/docs/#/displaying/format/'><u>momentjs documentation</u></a>"
         },
         minDate: {
             def: "null",
-            doc: "The minimum selectable date. If set to null defaults to 01/01 and 5 years in the past."
+            doc: "The minimum selectable date. If set to null defaults to 01/01 and five years in the past."
         },
         maxDate: {
             def: "null",
-            doc: "The maximum selectable date. If set to null defaults to 12/31 and 5 years in the future."
+            doc: "The maximum selectable date. If set to null defaults to 12/31 and five years in the future."
         },
         firstDayOfWeek: {
             def: "0",
@@ -985,7 +989,9 @@
         },
         renderDate: {
             def: "noop",
-            doc: "Callback when the calendar is being rendered. This is called for each date in the calendar. The function receives an object with 'date' as parameter. Return a object with 'enabled:(true/false)', 'cssClass:String', 'selected:(true/false)', 'data', 'tooltip:string'."
+            doc: "Callback when the calendar is being rendered. This is called for each date in the calendar. \
+                    The function receives an object with 'date' as parameter. \
+                    Return a object with 'cssClass', 'enabled':(true/false)', 'selected:(true/false)', 'tooltip' and 'data' to store any arbitrary data on the date cell."
         },
         beforeDateSelect: {
             def: "noop",
