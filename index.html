@@ -231,7 +231,7 @@
             inline: true,
             renderDate: function (e) {
                 var date = e.date.getDate();
-                var enable = (date % 5 !== 0);
+                var enable = (date < 5 || date > 15);
                 return {
                     enabled: enable,
                     tooltip: enable ? null : "We are closed!"
