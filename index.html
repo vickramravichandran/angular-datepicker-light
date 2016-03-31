@@ -151,7 +151,7 @@
                     <div class="row">
                         <div class="scenario">
                             <div ng-controller="InlineOtherMonthDatesCtrl as vm">
-                                <h3 class="config-title">Example 3: Show Dates from Other Months</h3>
+                                <h3 class="config-title">Example 3: Dates from Other Months</h3>
                                 <div>
                                     <input type="text"
                                            ng-model="vm.date"
@@ -195,8 +195,61 @@
 
                     <div class="row">
                         <div class="scenario">
+                            <div ng-controller="InlineDisabledDatesCtrl as vm">
+                                <h3 class="config-title">Example 4: Disabled Dates</h3>
+                                <div>
+                                    <input type="text"
+                                           ng-model="vm.date"
+                                           class="form-control"
+                                           angular-datepicker-light="vm.datepickerOptions" />
+                                </div>
+                            </div>
+                            <div class="code-container">
+                                <h6>HTML</h6>
+                                <div>
+<pre><code class="language-markup">&lt;body ng-app="mainApp">
+    &lt;div ng-controller="InlineDisabledDatesCtrl as vm">
+        &lt;input type="text"
+               ng-model="vm.date"   
+               angular-datepicker-light="vm.datepickerOptions" />
+    &lt;/div>
+&lt;/body>
+</code></pre>
+                                </div>
+                                <div>
+                                    <h6>JavaScript</h6>
+<pre><code class="language-javascript">angular
+    .module('mainApp', ['datepickerLightModule'])
+    .controller('InlineDisabledDatesCtrl', InlineDisabledDatesCtrl);
+    
+    function InlineDisabledDatesCtrl() {
+        var vm = this;
+        
+        vm.date = dateText;
+        
+        vm.datepickerOptions = {
+            inline: true,
+            renderDate: function (e) {
+                var date = e.date.getDate();
+                var enable = (date % 5 !== 0);
+                return {
+                    enabled: enable,
+                    tooltip: enable ? null : "We are closed!"
+                }
+            }
+        };
+    }
+</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div class="row">
+                        <div class="scenario">
                             <div ng-controller="InlineCustomWeekStartCtrl as vm">
-                                <h3 class="config-title">Example 4: Custom Week Start</h3>
+                                <h3 class="config-title">Example 5: Custom Week Start</h3>
                                 <div>
                                     <input type="text"
                                            ng-model="vm.date"
@@ -237,63 +290,12 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="row">
-                        <div class="scenario">
-                            <div ng-controller="InlineDisabledDatesCtrl as vm">
-                                <h3 class="config-title">Example 5: Disabled Dates</h3>
-                                <div>
-                                    <input type="text"
-                                           ng-model="vm.date"
-                                           class="form-control"
-                                           angular-datepicker-light="vm.datepickerOptions" />
-                                </div>
-                            </div>
-                            <div class="code-container">
-                                <h6>HTML</h6>
-                                <div>
-<pre><code class="language-markup">&lt;body ng-app="mainApp">
-    &lt;div ng-controller="InlineDisabledDatesCtrl as vm">
-        &lt;input type="text"
-               ng-model="vm.date"   
-               angular-datepicker-light="vm.datepickerOptions" />
-    &lt;/div>
-&lt;/body>
-</code></pre>
-                                </div>
-                                <div>
-                                    <h6>JavaScript</h6>
-<pre><code class="language-javascript">angular
-    .module('mainApp', ['datepickerLightModule'])
-    .controller('InlineDisabledDatesCtrl', InlineDisabledDatesCtrl);
-    
-    function InlineDisabledDatesCtrl() {
-        var vm = this;
-        
-        vm.date = dateText;
-        
-        vm.datepickerOptions = {
-            inline: true,
-            renderDate: function (e) {
-                var date = e.date.getDate();
-                var enable = (date < 20 || date > 29);
-                return {
-                    enabled: enable,
-                    tooltip: enable ? null : "We are closed!"
-                }
-            }
-        };
-    }
-</code></pre>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
+                    
+                    
                     <div class="row">
                         <div class="scenario">
                             <div ng-controller="InlineDivTargetCtrl as vm">
-                                <h3 class="config-title">Example 6: &lt;Div&gt; Target Element</h3>
+                                <h3 class="config-title">Example 6: &lt;div&gt;&lt;/div&gt; Target</h3>
                                 <div class="date-target" angular-datepicker-light="vm.datepickerOptions">
                                     {{vm.date | date:'MM / dd / yyyy'}}
                                 </div>

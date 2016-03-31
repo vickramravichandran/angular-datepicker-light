@@ -28,6 +28,7 @@ div.scenario {
 	div.scenario input[type=text] {
 		font-weight: bold;
 		background-color: white;
+/*        background-color: rgb(255, 248, 182);*/
         width: 110px;
 	}
 
