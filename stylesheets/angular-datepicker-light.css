@@ -27,6 +27,7 @@ div.datepicker-container > div.top-panel {
     div.datepicker-container > div.top-panel > table.calendar > tbody > tr > td {
         background-color: transparent;
         border: 0px;
+        padding: 0px;
     }
     
     div.datepicker-container > div.top-panel a.prev,
@@ -66,6 +67,7 @@ div.datepicker-container > div.middle-panel > table.calendar {
 
     div.datepicker-container > div.middle-panel > table.calendar > tbody > tr > td {
         background-color: transparent;
+        padding: 0px;
     }
 
     div.datepicker-container > div.middle-panel > table.calendar > tbody > tr.week-row > td,
