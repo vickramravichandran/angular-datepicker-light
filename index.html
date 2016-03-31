@@ -1,64 +1,383 @@
 <!doctype html>
 <html>
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Angular datepicker-light plugin by vickramravichandran</title>
+    <meta name="viewport" content="width=device-width,user-scalable=no">
+    <title>AngularJS datepicker-light plugin</title>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,700,500,400italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300,700' rel='stylesheet' type='text/css'>
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/github-light.css">
-    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="stylesheets/normalize.css">
+    <link rel="stylesheet" href="stylesheets/bootstrap.css" />
+
+    <link rel="stylesheet" href="stylesheets/main.css">
+    <link rel="stylesheet" href="stylesheets/prism.css">
+    <link rel="stylesheet" href="stylesheets/angular-datepicker-light.css" />
+    <link rel="stylesheet" href="stylesheets/styles.css" />
+
+    <!--<script type="text/javascript" src="javascripts/jquery.js"></script>-->
+
+    <script type="text/javascript" src="javascripts/prism.js"></script>
+
+    <script type="text/javascript" src="javascripts/angular.js"></script>
+    <script type="text/javascript" src="javascripts/moment.js"></script>
+    <script type="text/javascript" src="javascripts/angular-datepicker-light.js"></script>
+    <script type="text/javascript" src="javascripts/scripts.js"></script>
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  </head>
-  <body>
-    <div class="wrapper">
-      <header>
-        <h1>Angular datepicker-light plugin</h1>
-        <p></p>
 
-        <p class="view"><a href="https://github.com/vickramravichandran/angular-datepicker-light">View the Project on GitHub <small>vickramravichandran/angular-datepicker-light</small></a></p>
+    <style type="text/css">
+        input[type=text].form-control {
+            width: 110px;
+        }
 
+        div.datepicker-container-inline {
+            margin-top: 3px;
+        }
 
-        <ul>
-          <li><a href="https://github.com/vickramravichandran/angular-datepicker-light/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/vickramravichandran/angular-datepicker-light/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/vickramravichandran/angular-datepicker-light">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <h3>
-<a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
-
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here <a href="https://guides.github.com/features/mastering-markdown/">using GitHub Flavored Markdown</a>, select a template crafted by a designer, and publish. After your page is generated, you can check out the new <code>gh-pages</code> branch locally. If you’re using GitHub Desktop, simply sync your repository and you’ll see the new branch.</p>
-
-<h3>
-<a id="designer-templates" class="anchor" href="#designer-templates" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Designer Templates</h3>
-
-<p>We’ve crafted some handsome templates for you to use. Go ahead and click 'Continue to layouts' to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved.</p>
-
-<h3>
-<a id="creating-pages-manually" class="anchor" href="#creating-pages-manually" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Creating pages manually</h3>
-
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
-
-<h3>
-<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authors and Contributors</h3>
-
-<p>You can <a href="https://help.github.com/articles/basic-writing-and-formatting-syntax/#mentioning-users-and-teams" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor’s GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
-
-<h3>
-<a id="support-or-contact" class="anchor" href="#support-or-contact" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out our <a href="https://help.github.com/pages">documentation</a> or <a href="https://github.com/contact">contact support</a> and we’ll help you sort it out.</p>
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/vickramravichandran">vickramravichandran</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
+        div.date-target {
+            width: 320px;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px 10px 10px 10px;
+            text-align: center;
+            color: #191717;
+            background-color: rgb(255, 248, 182);
+        }
+    </style>
+</head>
+<body ng-app="mainApp">
+    <div class="sidebar">
+        <header class="header" role="banner">
+            <a href="http://www.vickram.me/"><img id="blog" class="logo" src="images/VS2015-180.png"></a>
+            <h1 class="title"><a href="http://www.vickram.me/" style="text-decoration:none">Vickram Ravichandran</a></h1>
+            <p class="description"></p>
+            <div class="separator"></div>
+            <nav class="main-nav" role="navigation">
+                <ul>
+                    <li><a class="" href="http://www.vickram.me/">Home</a></li>
+                </ul>
+            </nav>
+            <div class="social-icons">
+                <a href="https://github.com/vickramravichandran/angular-datepicker-light" class="icon icon-github-circled"></a>
+                <a href="https://www.linkedin.com/in/vickramravichandran" class="icon icon-linkedin"></a>
+            </div>
+        </header>
     </div>
-    <script src="javascripts/scale.fix.js"></script>
+    <div class="content">
+        <main role="main">
+            <article class="post" role="article" itemscope="" itemtype="http://schema.org/Article">
+                <h1 class="post-title">AngularJS datepicker-light plugin</h1>
+                
+                <div style="font-size:20px">
+                    <div style="margin-top:20px">
+                        <code>npm install angular-datepicker-light</code>
+                    </div>
+<!--
+                    <div style="margin-top:5px">
+                        <code>bower install angular-datepicker-light</code>
+                    </div>
+-->
+                </div>
+                
+                <div style="margin-top:20px; padding: 10px 0px">
+                    <a role="button" class="btn btn-primary btn-lg" href="https://github.com/vickramravichandran/angular-datepicker-light/archive/demo.zip">Download</a>
+                    <a role="button" class="btn btn-primary btn-lg" target="_blank" href="https://github.com/vickramravichandran/angular-datepicker-light">Source</a>
+                    <a role="button" class="btn btn-primary btn-lg" href="#options">Options</a>
+                </div>
+                
+                <div class="container-fluid">
+
+                    <div class="row">
+                        <div class="scenario">
+                            <div ng-controller="OnFocusCtrl as vm">
+                                <h3 class="config-title">Example 1: Show on Focus</h3>
+                                <div>
+                                    <input type="text"
+                                           ng-model="vm.date"
+                                           class="form-control"
+                                           angular-datepicker-light="vm.datepickerOptions" />
+                                </div>
+                            </div>
+                            <div class="code-container">
+                                <h6>HTML</h6>
+                                <div>
+<pre><code class="language-markup">&lt;body ng-app="mainApp">
+    &lt;div ng-controller="OnFocusCtrl as vm">
+        &lt;input type="text" ng-model="vm.date" />
+    &lt;/div>
+&lt;/body>
+</code></pre>
+                                </div>
+                                <div>
+                                    <h6>JavaScript</h6>
+<pre><code class="language-javascript">angular
+    .module('mainApp', ['datepickerLightModule'])
+    .controller('OnFocusCtrl', function () {
+        var vm = this;
+        
+        vm.date = dateText;
+    });
+</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="scenario">
+                            <div ng-controller="InlineCtrl as vm">
+                                <h3 class="config-title">Example 2: Show Always</h3>
+                                <div>
+                                    <input type="text"
+                                           ng-model="vm.date"
+                                           class="form-control"
+                                           angular-datepicker-light="vm.datepickerOptions" />
+                                </div>
+                            </div>
+                            <div class="code-container">
+                                <h6>HTML</h6>
+                                <div>
+<pre><code class="language-markup">&lt;body ng-app="mainApp">
+    &lt;div ng-controller="InlineCtrl as vm">
+        &lt;input type="text"
+               ng-model="vm.date"   
+               angular-datepicker-light="vm.datepickerOptions" />
+    &lt;/div>
+&lt;/body>
+</code></pre>
+                                </div>
+                                <div>
+                                    <h6>JavaScript</h6>
+<pre><code class="language-javascript">angular
+    .module('mainApp', ['datepickerLightModule'])
+    .controller('InlineCtrl', InlineCtrl)
+        
+    function InlineCtrl(){
+        var vm = this;
+        
+        vm.date = dateText;
+        
+        vm.datepickerOptions = {
+            inline: true
+        };
+    }
+</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="scenario">
+                            <div ng-controller="InlineOtherMonthDatesCtrl as vm">
+                                <h3 class="config-title">Example 3: Show Dates from Other Months</h3>
+                                <div>
+                                    <input type="text"
+                                           ng-model="vm.date"
+                                           class="form-control"
+                                           angular-datepicker-light="vm.datepickerOptions" />
+                                </div>
+                            </div>
+                            <div class="code-container">
+                                <h6>HTML</h6>
+                                <div>
+<pre><code class="language-markup">&lt;body ng-app="mainApp">
+    &lt;div ng-controller="InlineOtherMonthDatesCtrl as vm">
+        &lt;input type="text"
+               ng-model="vm.date"   
+               angular-datepicker-light="vm.datepickerOptions" />
+    &lt;/div>
+&lt;/body>
+</code></pre>
+                                </div>
+                                <div>
+                                    <h6>JavaScript</h6>
+<pre><code class="language-javascript">angular
+    .module('mainApp', ['datepickerLightModule'])
+    .controller('InlineOtherMonthDatesCtrl', InlineOtherMonthDatesCtrl);
     
-  </body>
+    function InlineOtherMonthDatesCtrl() {
+        var vm = this;
+        
+        vm.date = dateText;
+        
+        vm.datepickerOptions = {
+            inline: true,
+            showOtherMonthDates: true
+        };        
+    }
+</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="scenario">
+                            <div ng-controller="InlineCustomWeekStartCtrl as vm">
+                                <h3 class="config-title">Example 4: Custom Week Start</h3>
+                                <div>
+                                    <input type="text"
+                                           ng-model="vm.date"
+                                           class="form-control"
+                                           angular-datepicker-light="vm.datepickerOptions" />
+                                </div>
+                            </div>
+                            <div class="code-container">
+                                <h6>HTML</h6>
+                                <div>
+<pre><code class="language-markup">&lt;body ng-app="mainApp">
+    &lt;div ng-controller="InlineCustomWeekStartCtrl as vm">
+        &lt;input type="text"
+               ng-model="vm.date"   
+               angular-datepicker-light="vm.datepickerOptions" />
+    &lt;/div>
+&lt;/body>
+</code></pre>
+                                </div>
+                                <div>
+                                    <h6>JavaScript</h6>
+<pre><code class="language-javascript">angular
+    .module('mainApp', ['datepickerLightModule'])
+    .controller('InlineCustomWeekStartCtrl', InlineCustomWeekStartCtrl);
+    
+    function InlineCustomWeekStartCtrl() {
+        var vm = this;
+        
+        vm.date = dateText;
+        
+        vm.datepickerOptions = {
+            inline: true,
+            firstDayOfWeek: 1
+        };
+    }
+</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="scenario">
+                            <div ng-controller="InlineDisabledDatesCtrl as vm">
+                                <h3 class="config-title">Example 5: Disabled Dates</h3>
+                                <div>
+                                    <input type="text"
+                                           ng-model="vm.date"
+                                           class="form-control"
+                                           angular-datepicker-light="vm.datepickerOptions" />
+                                </div>
+                            </div>
+                            <div class="code-container">
+                                <h6>HTML</h6>
+                                <div>
+<pre><code class="language-markup">&lt;body ng-app="mainApp">
+    &lt;div ng-controller="InlineDisabledDatesCtrl as vm">
+        &lt;input type="text"
+               ng-model="vm.date"   
+               angular-datepicker-light="vm.datepickerOptions" />
+    &lt;/div>
+&lt;/body>
+</code></pre>
+                                </div>
+                                <div>
+                                    <h6>JavaScript</h6>
+<pre><code class="language-javascript">angular
+    .module('mainApp', ['datepickerLightModule'])
+    .controller('InlineDisabledDatesCtrl', InlineDisabledDatesCtrl);
+    
+    function InlineDisabledDatesCtrl() {
+        var vm = this;
+        
+        vm.date = dateText;
+        
+        vm.datepickerOptions = {
+            inline: true,
+            renderDate: function (e) {
+                var date = e.date.getDate();
+                var enable = (date < 20 || date > 29);
+                return {
+                    enabled: enable,
+                    tooltip: enable ? null : "We are closed!"
+                }
+            }
+        };
+    }
+</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="scenario">
+                            <div ng-controller="InlineDivTargetCtrl as vm">
+                                <h3 class="config-title">Example 6: &lt;Div&gt; Target Element</h3>
+                                <div class="date-target" angular-datepicker-light="vm.datepickerOptions">
+                                    {{vm.date | date:'MM / dd / yyyy'}}
+                                </div>
+                            </div>
+                            <div class="code-container">
+                                <h6>HTML</h6>
+                                <div>
+<pre><code class="language-markup">&lt;body ng-app="mainApp">
+    &lt;div ng-controller="InlineDivTargetCtrl as vm">
+        &lt;input type="text"
+               ng-model="vm.date"   
+               angular-datepicker-light="vm.datepickerOptions" />
+    &lt;/div>
+&lt;/body>
+</code></pre>
+                                </div>
+                                <div>
+                                    <h6>JavaScript</h6>
+<pre><code class="language-javascript">angular
+    .module('mainApp', ['datepickerLightModule'])
+    .controller('InlineDivTargetCtrl', InlineDivTargetCtrl);
+    
+    function InlineDivTargetCtrl() {
+        var vm = this;
+        
+        vm.date = today;
+        
+        vm.datepickerOptions = {
+            inline: true,
+            dateSelected: function (e) {
+                vm.date = e.date;
+            }
+        };
+    }
+</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div style="margin-top:20px;" xng-controller="PluginOptionsCtrl as vm">
+                    <h2 id="options">Options</h2>
+                    <table class="table">
+                        <tbody>
+                            <tr ng-repeat="(key, val) in vm.options">
+                                <th>{{key}}</th>
+                                <td>
+                                    <div>{{val.doc}}</div>
+                                    <i>Default: {{val.def}}</i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <div style="height:200px">
+                </div>
+            </article>
+        </main>
+    </div>
+</body>
 </html>
