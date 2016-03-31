@@ -21,6 +21,7 @@
     <script type="text/javascript" src="javascripts/prism.js"></script>
 
     <script type="text/javascript" src="javascripts/angular.js"></script>
+    <script type="text/javascript" src="javascripts/angular-sanitize.js"></script>
     <script type="text/javascript" src="javascripts/moment.js"></script>
     <script type="text/javascript" src="javascripts/angular-datepicker-light.js"></script>
     <script type="text/javascript" src="javascripts/scripts.js"></script>
@@ -341,15 +342,15 @@
 
                 </div>
 
-                <div style="margin-top:20px;" xng-controller="PluginOptionsCtrl as vm">
+                <div style="margin-top:20px;" ng-controller="PluginOptionsCtrl as vm">
                     <h2 id="options">Options</h2>
                     <table class="table">
                         <tbody>
                             <tr ng-repeat="(key, val) in vm.options">
                                 <th>{{key}}</th>
                                 <td>
-                                    <div>{{val.doc}}</div>
                                     <i>Default: {{val.def}}</i>
+                                    <div ng-bind-html="val.doc"></div>
                                 </td>
                             </tr>
                         </tbody>

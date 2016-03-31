@@ -2,13 +2,14 @@
     'use strict';
 
     angular
-        .module('mainApp', ['datepickerLightModule'])
+        .module('mainApp', ['datepickerLightModule', 'ngSanitize'])
         .controller('OnFocusCtrl', OnFocusCtrl)
         .controller('InlineCtrl', InlineCtrl)
         .controller('InlineDisabledDatesCtrl', InlineDisabledDatesCtrl)
         .controller('InlineOtherMonthDatesCtrl', InlineOtherMonthDatesCtrl)
         .controller('InlineCustomWeekStartCtrl', InlineCustomWeekStartCtrl)
-        .controller('InlineDivTargetCtrl', InlineDivTargetCtrl);
+        .controller('InlineDivTargetCtrl', InlineDivTargetCtrl)
+        .controller('PluginOptionsCtrl', PluginOptionsCtrl);
 
     var today = new Date();
     var mom = moment(today);
@@ -93,5 +94,10 @@
                 vm.date = e.date;
             }
         };
+    }
+
+    PluginOptionsCtrl.$inject = ["datepickerLightService"];
+    function PluginOptionsCtrl(datepickerLightService) {
+        this.options = datepickerLightService.defaultOptionsDoc();
     }
 })();
