@@ -24,12 +24,10 @@ div.datepicker-container > div.top-panel {
         margin: 0px;
     }
 
-div.datepicker-container > div.top-panel > table.calendar > tbody > tr > td {
+    div.datepicker-container > div.top-panel > table.calendar > tbody > tr > td {
         background-color: transparent;
-    border: 0px;
+        border: 0px;
     }
-
-
     
     div.datepicker-container > div.top-panel a.prev,
     div.datepicker-container > div.top-panel a.next {
