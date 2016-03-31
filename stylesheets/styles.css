@@ -28,8 +28,23 @@ div.scenario {
 	div.scenario input[type=text] {
 		font-weight: bold;
 		background-color: white;
+        width: 110px;
 	}
 
 h3.config-title {
 	margin-top: 20px;
 }
+
+        div.datepicker-container-inline {
+            margin-top: 5px;
+        }
+
+        div.date-target {
+            width: 320px;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px 10px 10px 10px;
+            text-align: center;
+            color: #191717;
+            background-color: rgb(255, 248, 182);
+        }
