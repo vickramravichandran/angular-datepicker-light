@@ -11,12 +11,12 @@
         .controller('InlineDivTargetCtrl', InlineDivTargetCtrl)
         .controller('PluginOptionsCtrl', PluginOptionsCtrl);
 
-    var dateText = moment(new Date()).format("MM/DD/YYYY");
+    //var dateText = moment(new Date()).format("MM/DD/YYYY");
 
     // on focus
     function OnFocusCtrl() {
         var vm = this;
-        vm.date = dateText;
+        vm.date = "07/01/2016";
         vm.datepickerOptions = {
             altTarget: $("#calendarIcon")
         };
@@ -26,29 +26,24 @@
     function InlineCtrl() {
         var vm = this;
 
-        vm.date = dateText;
+        vm.date = "07/01/2016";
         vm.datepickerOptions = {
             inline: true,
             containerCssClass: "datepicker-container-inline"
         };
     }
-    
+
     // inline, disabled dates, tooltip
     function InlineDisabledDatesCtrl() {
         var vm = this;
 
-        vm.date = dateText;
-
+        vm.date = "07/20/2016";
         vm.datepickerOptions = {
             inline: true,
             containerCssClass: "datepicker-container-inline",
             renderDate: function (e) {
-                var date = e.date.getDate();
-
-                var enable = (date < 5 || date > 15);
                 return {
-                    enabled: enable,
-                    tooltip: enable ? null : "We are closed!"
+                    enabled: e.date.getDate() > 10
                 }
             }
         };
@@ -58,8 +53,7 @@
     function InlineOtherMonthDatesCtrl() {
         var vm = this;
 
-        vm.date = dateText;
-
+        vm.date = "07/01/2016";
         vm.datepickerOptions = {
             inline: true,
             showOtherMonthDates: true,
@@ -71,20 +65,18 @@
     function InlineCustomWeekStartCtrl() {
         var vm = this;
 
-        vm.date = dateText;
-
+        vm.date = "07/01/2016";
         vm.datepickerOptions = {
             inline: true,
             firstDayOfWeek: 1,
             containerCssClass: "datepicker-container-inline"
         };
     }
-    
+
     function InlineDivTargetCtrl() {
         var vm = this;
 
-        vm.date = dateText;
-
+        vm.date = "Select a Date";
         vm.datepickerOptions = {
             inline: true,
             containerCssClass: "datepicker-container-inline",
