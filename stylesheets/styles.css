@@ -29,7 +29,7 @@ div.scenario {
         display: inline-block;
         width: 110px;
         font-weight: bold;
-/*        background-color: white;*/
+        /*        background-color: white;*/
         background-color: rgb(255, 248, 182);
     }
 
@@ -52,6 +52,11 @@ div.date-target {
 }
 
 #calendarIcon {
-    font-size: 25px;
     margin-left: 5px;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background-repeat: no-repeat;
+    background-position: top left;
+    background-image: url(images/calendar.png);
 }
