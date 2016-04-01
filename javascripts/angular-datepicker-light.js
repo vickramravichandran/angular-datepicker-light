@@ -4,6 +4,25 @@
         .service('datepickerLightService', datepickerLightService)
         .directive('angularDatepickerLight', datepickerLightDirective);
 
+    // polyfill for Array.prototype.find
+    if (!angular.isFunction(Array.prototype.find)) {
+        Array.prototype.find = function (callback) {
+            var that = this;
+
+            var found;
+            for (var i = 0; i < that.length; i++) {
+                var item = that[i];
+
+                if (callback(item) === true) {
+                    found = item;
+                    break;
+                }
+            }
+
+            return found;
+        }
+    }
+
     datepickerLightDirective.$inject = ["$compile", "$document", "$window", "$timeout", "$templateRequest", "datepickerLightService"];
     function datepickerLightDirective($compile, $document, $window, $timeout, $templateRequest, datepickerLightService) {
 
@@ -710,7 +729,7 @@
             // tooltip for the date <td>
             cellData.tooltip = cbRetVal.tooltip;
         }
-
+        
         function postRenderDateCallback(dateToSelect) {
             // after the renderDate callbacks find the object with cellData.selected == true.
             // this might have been set on the cellData during callback
