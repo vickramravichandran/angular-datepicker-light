@@ -1,4 +1,4 @@
-<div class="date-picker-container" data-instance-id="{{ctrl.instanceId}}" ng-show="ctrl.containerVisible">
+<div class="datepicker-container" data-instance-id="{{ctrl.instanceId}}" ng-show="ctrl.containerVisible">
     <div class="top-panel">
         <table class="calendar" border='0' cellpadding='0' cellspacing='0'>
             <tbody>
@@ -9,17 +9,6 @@
                                 ng-model="ctrl.selectedMonth"
                                 ng-options="item.index as item.name for item in ctrl.monthNames">
                         </select>
-<!--
-                        <select class="months" 
-                                ng-model="ctrl.selectedMonth"
-                                ng-change="ctrl.monthChange(ctrl.selectedMonth, ctrl.selectedYear)">
-                            <option ng-repeat="item in ctrl.monthNames"
-                                    ng-selected="ctrl.selectedMonth == {{$index}}"
-                                    value="{{$index}}"
-                                    label="{{item}}">
-                            </option>
-                        </select>
--->
                         <select class="years" 
                                 ng-model="ctrl.selectedYear"
                                 ng-change="ctrl.yearChange(ctrl.selectedYear)"
@@ -27,11 +16,11 @@
                     </td>
                     <td style="text-align:right">
                         <div>
-                            <a class="prev fa fa-chevron-left" 
+                            <a class="prev" 
                                ng-click="ctrl.gotoPreviousMonth(ctrl.selectedMonth, ctrl.selectedYear)"
                                href="javascript:void(0)" 
                                title="Previous Month"></a>
-                            <a class="next fa fa-chevron-right" 
+                            <a class="next" 
                                ng-click="ctrl.gotoNextMonth(ctrl.selectedMonth, ctrl.selectedYear)"
                                href="javascript:void(0)" 
                                title="Next Month"></a>
@@ -41,7 +30,7 @@
             </tbody>
         </table>
     </div>
-    <div class="middle-panel" xx-ng-controller="DaysViewController as ctrl">
+    <div class="middle-panel">
         <table class="calendar" border='0' cellpadding='0' cellspacing='0'>
             <thead>
                 <tr>
@@ -61,7 +50,7 @@
                         ng-click="ctrl.dateSelect(item)"
                         ng-repeat="item in week"
                         title="{{item.tooltip}}">
-                        <span x-ng-if="ctrl.isDateVisible(item.date)">{{ctrl.dateDisplay(item)}}</span>
+                        <span ng-if="ctrl.isDateVisible(item.date)">{{ctrl.dateDisplay(item)}}</span>
 <!--                        <span>{{item.date | date:'d'}}</span>-->
                     </td>
                 </tr>

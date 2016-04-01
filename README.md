@@ -1,4 +1,4 @@
-# AngularJS datepicker-light
+# AngularJS datepicker plugin
 
 `npm install angular-datepicker-light`
 
@@ -6,9 +6,8 @@
 
 #### Requirements
 
-* Angular v1.5.0+
+* Angular v1.5.3+
 * Moment v2.12.0+
-
 
 <b>Demo:</b> http://vickramravichandran.github.io/angular-datepicker-light/
 
