@@ -1,4 +1,19 @@
-(function () {
+(function (global, factory) {
+    if (typeof exports === 'object' && typeof module !== 'undefined') {
+        // commonJS
+        module.exports = factory(require('angular'), require('moment'));
+    }
+    else if (typeof define === 'function' && define.amd) {
+        // AMD
+        define(['module', 'angular', 'moment'], function (module, angular, moment) {
+            module.exports = factory(angular, moment);
+        });
+    }
+    else {
+        factory(global.angular, global.moment);
+    }
+}(this, function (angular, moment) {
+
     angular
         .module('datepickerLightModule', [])
         .service('datepickerLightService', datepickerLightService)
@@ -46,8 +61,10 @@
             datepickerLightService.addDirectiveCtrl(ctrl);
 
             // execute the options expression in the parent scope
-            var options = ctrl.options() || {};
-            ctrl.init(angular.extend({}, defaultOptions, options));
+            var options = ctrl.options() || {
+            };
+            ctrl.init(angular.extend({
+            }, defaultOptions, options));
 
             // store the jquery element on the controller          
             ctrl.target = element;
@@ -404,7 +421,8 @@
 
 
         this.dateCellCssClass = function (cellData) {
-            var css = {};
+            var css = {
+            };
 
             var dateVisible = that.isDateVisible(cellData.date);
 
@@ -729,7 +747,7 @@
             // tooltip for the date <td>
             cellData.tooltip = cbRetVal.tooltip;
         }
-        
+
         function postRenderDateCallback(dateToSelect) {
             // after the renderDate callbacks find the object with cellData.selected == true.
             // this might have been set on the cellData during callback
@@ -894,7 +912,7 @@
                 that.container.position(pos);
             } else {
                 var scrollTop = $document[0].body.scrollTop || $document[0].documentElement.scrollTop || $window.pageYOffset,
-                    scrollLeft = $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft || $window.pageXOffset;
+        scrollLeft = $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft || $window.pageXOffset;
 
                 that.container.css({
                     "left": rect.left + scrollLeft + "px"
@@ -941,7 +959,6 @@
         }
     }
 
-
     var instanceCount = 0;
 
     var defaultOptions = {
@@ -972,7 +989,7 @@
         },
         dateFormat: {
             def: "MM/DD/YYYY",
-            doc: "The date format used to parse and display dates. For a full list of the possible formats see the <a href='http://momentjs.com/docs/#/displaying/format/'><u>momentjs documentation</u></a>"
+            doc: "The date format used to parse and display dates. For a full list of the possible formats see the http://momentjs.com/docs/#/displaying/format/"
         },
         minDate: {
             def: "null",
@@ -1019,4 +1036,5 @@
             doc: "Callback after a date is selected. The function receives an object with 'date' and 'data' properties."
         }
     };
-})();
+
+}));
