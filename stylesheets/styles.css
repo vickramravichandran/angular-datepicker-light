@@ -29,8 +29,8 @@ div.scenario {
         display: inline-block;
         width: 110px;
         font-weight: bold;
-        background-color: white;
-        /*        background-color: rgb(255, 248, 182);*/
+/*        background-color: white;*/
+        background-color: rgb(255, 248, 182);
     }
 
 h3.config-title {
