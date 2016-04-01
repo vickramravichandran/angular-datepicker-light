@@ -1,4 +1,4 @@
-﻿@charset "UTF-8";
+@charset "UTF-8";
 
 @font-face {
     font-family: 'kiss';
@@ -753,7 +753,7 @@ h1.post-title {
         }
 
         .sidebar .npm-links {
-            margin-top: 1em;
+            margin-top: 2em;
         }
 
     .content {
