@@ -34,11 +34,17 @@ div.datepicker-container > div.top-panel {
     div.datepicker-container > div.top-panel a.next {
         display: inline-block;
         text-decoration: none;
-        color: Black;
+        width: 12px;
+        height: 16px;
+    }
+
+    div.datepicker-container > div.top-panel a.prev {
+        background-image: url(images/chevron-left.png);
     }
 
     div.datepicker-container > div.top-panel a.next {
         margin-left: 15px;
+        background-image: url(images/chevron-right.png);
     }
 
     div.datepicker-container > div.top-panel select {
