@@ -989,7 +989,7 @@
         },
         dateFormat: {
             def: "MM/DD/YYYY",
-            doc: "The date format used to parse and display dates. For a full list of the possible formats see the http://momentjs.com/docs/#/displaying/format/"
+            doc: "The date format used to parse and display dates. For a full list of the possible formats see the <a href='http://momentjs.com/docs/#/displaying/format/'>momentjs documentation<a>"
         },
         minDate: {
             def: "null",
