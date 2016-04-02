@@ -61,8 +61,6 @@ div.date-target {
 	background-image: url(images/calendar.png);
 }
 
-/*table.documentation > tbody > tr > th,*/
-table.documentation > tbody > tr > td {
-	/*word-wrap: break-word;*/
-	word-break:break-all;
+table.documentation > tbody > tr > td a {
+	color: blue;
 }
