@@ -69,11 +69,6 @@
             // store the jquery element on the controller          
             ctrl.target = element;
 
-//            $templateRequest("javascripts/templates/angular-datepicker-light.html")
-//                .then(function (template) {
-//                    initContainer(template);
-//                });
-
             initContainer(html);
             
             function initContainer(template) {
@@ -115,12 +110,14 @@
             }
             
             $document.ready(function(){
-                // activate all inline date pickers
-                if (ctrl.isInline()) {
-                    scope.$evalAsync(function () {
+                // activate all inline date pickers and call ready callback
+                scope.$evalAsync(function () {
+                    if (ctrl.isInline()) {
                         ctrl.activate();
-                    });
-                }
+                    }
+                    
+                    ctrl.ready();
+                });
             })
 
             // when the target(textbox) gets focus activate the corresponding container
@@ -236,7 +233,6 @@
             minDate = null,
             maxDate = null,
             calendarItems = [];
-            //targetTextFn = null;
 
         var monthNamesLong = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
         //var monthNamesShort = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
@@ -287,21 +283,18 @@
 
             var now = new Date();
 
+            minDate = parseDate(that.options.minDate);
+            maxDate = parseDate(that.options.maxDate);
+            
             // set min and max date values
             // if not provided in options default minDate to 1/1/(-5 years) and maxDate to 12/31/(+5 years) of next year
-            if (isUndefinedOrNull(that.options.minDate)) {
+            if (isUndefinedOrNull(minDate)) {
                 minDate = new Date(now.getFullYear() - 5, 0, 1);
-            }
-            else {
-                minDate = parseDate(that.options.minDate);
             }
 
             // maxdate
-            if (isUndefinedOrNull(that.options.maxDate)) {
+            if (isUndefinedOrNull(maxDate)) {
                 maxDate = new Date(now.getFullYear() + 5, 11, 31);
-            }
-            else {
-                maxDate = parseDate(that.options.maxDate);
             }
 
             // create day names array starting at options.firstDayOfWeek
@@ -335,36 +328,7 @@
 
             that.todayDateDisplay = formatDate(now, "ddd MMM DD YYYY");
 
-            var defaultDate = null;
-            
-            // if defaultDate is not provided default to today
-            if (isUndefinedOrNull(that.options.defaultDate)) {
-                defaultDate = that.todayDate;
-            }
-            else {
-                // is it a date instance?
-                if (angular.isDate(that.options.defaultDate)) {
-                    defaultDate = that.options.defaultDate;
-                }
-                // try parsing the 'defaultDate' from options
-                else {
-                    var date = parseDate(that.options.defaultDate);
-                
-                    // if parsing failed set default to todayDate
-                    if (date === null) {
-                        defaultDate = that.todayDate;
-                    }
-                    else {
-                        defaultDate = date;
-                    }
-                }
-            }
-            
-            // at this point defaultDate is either 'today' or 'options.defaultDate'
-            // if defaultDate is outside valid date range default to todayDate
-            if (!isDateInRange(defaultDate)) {
-                defaultDate = that.todayDate;
-            }
+            var defaultDate = getDefaultDate();
             
             that.selectedMonth = defaultDate.getMonth();
             that.selectedYear = defaultDate.getFullYear();
@@ -421,6 +385,10 @@
             }
 
             that.show();
+        }
+        
+        this.ready = function() {
+            safeCallback(that.options.ready, methods());
         }
 
 
@@ -601,7 +569,62 @@
             return false;
         }
 
+        
+        this.getDate = function() {
+            if (!isUndefinedOrNull(ctrl.selectedData) && angular.isObject(ctrl.selectedData)) {
+                return ctrl.selectedData.date;
+            }
+        }
+        
+        this.setDate = function(dateToSelect) {
+            if (angular.isDate(dateToSelect) && isDateInRange(dateToSelect))
+            {
+                ctrl.dateSelect(getCellData(dateToSelect));
+                return;
+            }
+            
+            var date = parseDate(dateToSelect);
+            
+            if (!isUndefinedOrNull(date) && isDateInRange(date)) {
+                ctrl.dateSelect(getCellData(date));
+            }
+        }
+        
 
+        function getDefaultDate() {
+            var defaultDate;
+            
+            // if defaultDate is not provided default to today
+            if (isUndefinedOrNull(that.options.defaultDate)) {
+                return that.todayDate;
+            }
+            
+            // is it a date instance?
+            if (angular.isDate(that.options.defaultDate)) {
+                defaultDate = that.options.defaultDate;
+            }
+            // try parsing the 'defaultDate' from options
+            else {
+                var date = parseDate(that.options.defaultDate);
+
+                // if parsing failed set default to todayDate
+                if (date === null) {
+                    defaultDate = that.todayDate;
+                }
+                else {
+                    defaultDate = date;
+                }
+            }
+            
+            // at this point defaultDate is either 'today' or 'options.defaultDate'
+            // if defaultDate is outside valid date range default to todayDate
+            if (!isDateInRange(defaultDate)) {
+                defaultDate = that.todayDate;
+            }
+            
+            return defaultDate;
+        }
+        
         function getPreviousMonthYear(month, year) {
             var monthCopy = month,
                 yearCopy = year;
@@ -1015,6 +1038,30 @@
         datepickerLightService.defaultOptionsDoc = function () {
             return defaultOptionsDoc;
         }
+        
+        var methods = function () {
+            return {
+                getDate: function () {
+                    return that.getDate();
+                },
+            
+                setDate: function (date) {
+                    that.setDate(date);
+                },
+            
+                hide: function () {
+                    that.hide();
+                },
+            
+                show: function () {
+                    that.show();
+                },
+            
+                refresh: function () {
+                    that.buildCalendar();
+                }
+            }
+        }
     }
 
     function datepickerLightService() {
@@ -1045,6 +1092,7 @@
         firstDayOfWeek: 0,
         showOtherMonthDates: false,
         containerCssClass: null,
+        ready: angular.noop,
         monthYearChanged: angular.noop,
         datepickerShown: angular.noop,
         datepickerHidden: angular.noop,
@@ -1068,7 +1116,7 @@
         },
         defaultDate: {
             def: "null",
-            doc: "The default calendar date to select when the datepicker is first shown. Set to an actual Date object or as a string in the current dateFormat."
+            doc: "The default date to select when the datepicker is first shown. Set to an actual Date object or as a string in the current dateFormat."
         },
         minDate: {
             def: "null",
@@ -1089,6 +1137,10 @@
         containerCssClass: {
             def: "null",
             doc: "CSS class applied to the datepicker container"
+        },
+        ready: {
+            def: "noop",
+            doc: "Callback after the datepicker is initialized and ready."
         },
         monthYearChanged: {
             def: "noop",
