@@ -69,11 +69,13 @@
             // store the jquery element on the controller          
             ctrl.target = element;
 
-            $templateRequest("javascripts/templates/angular-datepicker-light.html")
-                .then(function (template) {
-                    initContainer(template);
-                });
+//            $templateRequest("javascripts/templates/angular-datepicker-light.html")
+//                .then(function (template) {
+//                    initContainer(template);
+//                });
 
+            initContainer(html);
+            
             function initContainer(template) {
                 var templateFn = $compile(template);
                 ctrl.container = templateFn(scope);
@@ -1036,5 +1038,85 @@
             doc: "Callback after a date is selected. The function receives an object with 'date' and 'data' properties."
         }
     };
+
+    
+    var html = "";
+    
+    html += '<div class="datepicker-container" data-instance-id="{{ctrl.instanceId}}" ng-show="ctrl.containerVisible">';
+    html += '<div class="top-panel">';
+    html += '    <table class="calendar" border="0" cellpadding="0" cellspacing="0">';
+    html += '        <tbody>';
+    html += '            <tr>';
+    html += '                <td style="text-align:left">';
+    html += '                    <select class="months" ';
+    html += '                            ng-change="ctrl.monthChange(ctrl.selectedMonth)"';
+    html += '                            ng-model="ctrl.selectedMonth"';
+    html += '                            ng-options="item.index as item.name for item in ctrl.monthNames">';
+    html += '                    </select>';
+    html += '                    <select class="years" ';
+    html += '                            ng-model="ctrl.selectedYear"';
+    html += '                            ng-change="ctrl.yearChange(ctrl.selectedYear)"';
+    html += '                            ng-options="item for item in ctrl.validYears"></select>';
+    html += '                </td>';
+    html += '                <td style="text-align:right">';
+    html += '                    <div>';
+    html += '                        <a class="prev" ';
+    html += '                           ng-click="ctrl.gotoPreviousMonth(ctrl.selectedMonth, ctrl.selectedYear)"';
+    html += '                           href="javascript:void(0)" ';
+    html += '                           title="Previous Month"></a>';
+    html += '                        <a class="next" ';
+    html += '                           ng-click="ctrl.gotoNextMonth(ctrl.selectedMonth, ctrl.selectedYear)"';
+    html += '                           href="javascript:void(0)"' ;
+    html += '                           title="Next Month"></a>';
+    html += '                    </div>';
+    html += '                </td>';
+    html += '            </tr>';
+    html += '        </tbody>';
+    html += '    </table>';
+    html += '</div>';
+    html += '<div class="middle-panel">';
+    html += '    <table class="calendar" border="0" cellpadding="0" cellspacing="0">';
+    html += '        <thead>';
+    html += '            <tr>';
+    html += '                <th ng-repeat="day in ctrl.dayNames" style="width:14%">';
+    html += '                    {{day}}';
+    html += '                </th>';
+    html += '            </tr>';
+    html += '        </thead>';
+    html += '        <tbody>';
+    html += '            <tr>';
+    html += '                <td colspan="7">';
+    html += '                    &nbsp;';
+    html += '                </td>';
+    html += '            </tr>';
+    html += '            <tr class="week-row" ng-repeat="week in ctrl.weeks">';
+    html += '                <td ng-class="ctrl.dateCellCssClass(item)"';
+    html += '                    ng-click="ctrl.dateSelect(item)"';
+    html += '                    ng-repeat="item in week"';
+    html += '                    title="{{item.tooltip}}">';
+    html += '                    <span ng-if="ctrl.isDateVisible(item.date)">{{ctrl.dateDisplay(item)}}</span>';
+    html += '                </td>';
+    html += '            </tr>';
+    html += '            <tr class="week-row-placeholder" ng-if="ctrl.weeks.length < 6">';
+    html += '                <td ng-repeat="n in [7]">&nbsp;</td>';
+    html += '            </tr>';
+    html += '        </tbody>';
+    html += '    </table>';
+    html += '</div>';
+    html += '<div class="bottom-panel">';
+    html += '    <table class="calendar" border="0" cellpadding="0" cellspacing="0">';
+    html += '        <tbody>';
+    html += '            <tr class="today">';
+    html += '                <td style="text-align:left">';
+    html += '                    <a class="today" ';
+    html += '                       ng-click="ctrl.todayDateSelect()"';
+    html += '                       href="javascript:void(0)">Today {{ctrl.todayDateDisplay}}</a>';
+    html += '                </td>';
+    html += '                <td>&nbsp;</td>';
+    html += '            </tr>';
+    html += '        </tbody>';
+    html += '    </table>';
+    html += '</div>';
+    html += '</div>';
 
 }));
