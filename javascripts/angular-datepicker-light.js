@@ -112,12 +112,16 @@
                 ctrl.container.css("MozUserSelect", "none").bind("selectstart", function () {
                     return false;
                 });
-
+            }
+            
+            $document.ready(function(){
                 // activate all inline date pickers
                 if (ctrl.isInline()) {
-                    ctrl.activate();
+                    scope.$evalAsync(function () {
+                        ctrl.activate();
+                    });
                 }
-            }
+            })
 
             // when the target(textbox) gets focus activate the corresponding container
             element.on("click focus", function (e) {
@@ -148,11 +152,11 @@
                 });
             });
 
-            angular.element($window).on("resize", function (e) {
-                scope.$evalAsync(function () {
-                    ctrl.hide();
-                });
-            })
+//            angular.element($window).on("resize", function (e) {
+//                scope.$evalAsync(function () {
+//                    ctrl.hide();
+//                });
+//            })
 
             // hide container upon CLICK outside of the dropdown rectangle region
             $document.on("click", function (e) {
@@ -343,6 +347,40 @@
             }
         }
 
+        this.tryApplyDateFromTargetUsingjQuery = function () {
+            if (that.target[0].tagName.toLowerCase() === 'input')
+            {
+                that.targetText = that.target.val();
+            }
+            else
+            {
+                that.targetText = that.target.html();
+            }
+            
+            var date = parseDate(that.targetText);
+
+            // if date is valid and in range build calendar if needed
+            if (date !== null && isDateInRange(date)) {
+                // sets the that.selectedMonth and that.selectedYear if different
+                var updated = setMonthYear(date);
+
+                // build calendar only if month or year changed
+                if (updated === true) {
+                    buildCalendar();
+                }
+
+                applySelection(date, true);
+            }
+        }
+
+        this.activateOnInit = function () {
+            activeInstanceId = that.instanceId;
+            
+            that.tryApplyDateFromTargetUsingjQuery();
+
+            that.show();
+        }
+        
         this.tryApplyDateFromTarget = function () {
             if (that.textModelCtrl === null) {
                 return;
@@ -364,7 +402,7 @@
                 applySelection(date, true);
             }
         }
-
+        
         this.activate = function () {
             activeInstanceId = that.instanceId;
 
