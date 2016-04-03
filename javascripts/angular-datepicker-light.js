@@ -152,11 +152,11 @@
                 });
             });
 
-//            angular.element($window).on("resize", function (e) {
-//                scope.$evalAsync(function () {
-//                    ctrl.hide();
-//                });
-//            })
+            angular.element($window).on("resize", function (e) {
+                scope.$evalAsync(function () {
+                    ctrl.hide();
+                });
+            })
 
             // hide container upon CLICK outside of the dropdown rectangle region
             $document.on("click", function (e) {
@@ -337,22 +337,31 @@
 
             var defaultDate = null;
             
-            // try parsing the 'defaultDate' from options
-            if (isUndefinedOrNull(that.options.defaultDate))
-            {
-                defaultDate = now;
+            // if defaultDate is not provided default to today
+            if (isUndefinedOrNull(that.options.defaultDate)) {
+                defaultDate = that.todayDate;
             }
             else {
-                var date = parseDate(that.options.defaultDate);
+                // is it a date instance?
+                if (angular.isDate(that.options.defaultDate)) {
+                    defaultDate = that.options.defaultDate;
+                }
+                // try parsing the 'defaultDate' from options
+                else {
+                    var date = parseDate(that.options.defaultDate);
                 
-                // default to todays date upon initialize
-                if (date !== null) {
-                    defaultDate = date;
+                    // if parsing failed set default to todayDate
+                    if (date === null) {
+                        defaultDate = that.todayDate;
+                    }
+                    else {
+                        defaultDate = date;
+                    }
                 }
             }
             
-            // at this point defaultDate is either 'now' or 'options.defaultDate'
-            // if defaultDate is outside valid date range default to minDate
+            // at this point defaultDate is either 'today' or 'options.defaultDate'
+            // if defaultDate is outside valid date range default to todayDate
             if (!isDateInRange(defaultDate)) {
                 defaultDate = that.todayDate;
             }
@@ -371,13 +380,16 @@
   
         
         this.tryApplyDateFromTarget = function () {
+            // textModelCtrl will be null if ng-model directive 
+            // is not applied to the input element or may be the target is a non-input div, span etc.
+            // in this scenario get using jquery
             if (that.textModelCtrl === null) {
-                return;
+                that.targetText = jQueryTargetValue();
+            }
+            else {
+                that.targetText = that.textModelCtrl.$viewValue;    
             }
 
-            that.targetText = that.textModelCtrl.$viewValue;
-
-            //that.targetText = that.textModelCtrl.$viewValue;
             var date = parseDate(that.targetText);
 
             // if date is valid and in range build calendar if needed
@@ -397,8 +409,9 @@
         this.activate = function () {
             activeInstanceId = that.instanceId;
 
-            // the textbox 
-            if (that.textModelCtrl !== null && parseDate(that.textModelCtrl.$viewValue) === null) {
+            // update the the target with the current selected date if the target text is not a valid date
+            var targetValue = jQueryTargetValue();
+            if (targetValue === null || targetValue.length === 0 || parseDate(targetValue) === null) {
                 if (!isUndefinedOrNull(that.selectedData)) {
                     updateTargetModel(formatDate(that.selectedData.date));
                 }
@@ -963,13 +976,11 @@
         }
 
         function updateTargetModel(modelValue) {
-            // update only if different from current value
-//            if (modelValue !== targetViewValue()) {
-//                targetViewValue(modelValue);
-//            }
-            
+            // textModelCtrl will be null if ng-model directive 
+            // is not applied to the input element or may be the target is a non-input div, span etc.
+            // in this scenario try updating using jquery
             if (that.textModelCtrl === null) {
-                targetViewValue(modelValue);
+                jQueryTargetValue(modelValue);
                 return;
             }
 
@@ -980,25 +991,25 @@
             }
         }
         
-//        function targetViewValue (value) {
-//            var targetTextFn;
-//            
-//            // ng-model is not applied or its not an input element
-//            // perhaps a <div>, <span> etc.
-//            if (that.target[0].tagName.toLowerCase() === 'input') {
-//                targetTextFn = that.target.val.bind(that.target);
-//            }
-//            else {
-//                targetTextFn = that.target.html.bind(that.target);
-//            }
-//            
-//            if (angular.isUndefined(value)) {
-//                return targetTextFn();
-//            }
-//            else {
-//                targetTextFn(value);
-//            }
-//        }
+        function jQueryTargetValue (value) {
+            var targetTextFn;
+            
+            // ng-model is not applied or its not an input element
+            // perhaps a <div>, <span> etc.
+            if (that.target[0].tagName.toLowerCase() === 'input') {
+                targetTextFn = that.target.val.bind(that.target);
+            }
+            else {
+                targetTextFn = that.target.html.bind(that.target);
+            }
+            
+            if (angular.isUndefined(value)) {
+                return targetTextFn().trim();
+            }
+            else {
+                targetTextFn(value);
+            }
+        }
 
 
         datepickerLightService.defaultOptionsDoc = function () {
@@ -1028,9 +1039,9 @@
         altTarget: null,
         inline: false,
         dateFormat: 'MM/DD/YYYY',
+        defaultDate: null,
         minDate: null,
         maxDate: null,
-        defaultDate: null,
         firstDayOfWeek: 0,
         showOtherMonthDates: false,
         containerCssClass: null,
@@ -1054,6 +1065,10 @@
         dateFormat: {
             def: "MM/DD/YYYY",
             doc: "The date format used to parse and display dates. For a full list of the possible formats see the <a href='http://momentjs.com/docs/#/displaying/format/'>momentjs documentation<a>"
+        },
+        defaultDate: {
+            def: "null",
+            doc: "The default calendar date to select when the datepicker is first shown. Set to an actual Date object or as a string in the current dateFormat."
         },
         minDate: {
             def: "null",

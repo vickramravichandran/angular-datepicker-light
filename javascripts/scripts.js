@@ -76,13 +76,10 @@
     function InlineDivTargetCtrl() {
         var vm = this;
 
-        vm.date = "Select a Date";
+        vm.date = "07/04/2016";
         vm.datepickerOptions = {
             inline: true,
-            containerCssClass: "datepicker-container-inline",
-            dateSelected: function (e) {
-                vm.date = e.date;
-            }
+            containerCssClass: "datepicker-container-inline"
         };
     }
 
