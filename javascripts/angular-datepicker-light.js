@@ -233,9 +233,10 @@
         var that = this;
 
         var activeInstanceId = 0,
-            minDate,
-            maxDate,
+            minDate = null,
+            maxDate = null,
             calendarItems = [];
+            //targetTextFn = null;
 
         var monthNamesLong = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
         //var monthNamesShort = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
@@ -334,11 +335,32 @@
 
             that.todayDateDisplay = formatDate(now, "ddd MMM DD YYYY");
 
-            // default to todays date upon initialize
-            that.selectedMonth = that.todayDate.getMonth();
-            that.selectedYear = that.todayDate.getFullYear();
-            that.selectedData = getCellData(that.todayDate);
-
+            var defaultDate = null;
+            
+            // try parsing the 'defaultDate' from options
+            if (isUndefinedOrNull(that.options.defaultDate))
+            {
+                defaultDate = now;
+            }
+            else {
+                var date = parseDate(that.options.defaultDate);
+                
+                // default to todays date upon initialize
+                if (date !== null) {
+                    defaultDate = date;
+                }
+            }
+            
+            // at this point defaultDate is either 'now' or 'options.defaultDate'
+            // if defaultDate is outside valid date range default to minDate
+            if (!isDateInRange(defaultDate)) {
+                defaultDate = that.todayDate;
+            }
+            
+            that.selectedMonth = defaultDate.getMonth();
+            that.selectedYear = defaultDate.getFullYear();
+            that.selectedData = getCellData(defaultDate);
+            
             buildCalendar();
 
             // build years array
@@ -346,40 +368,7 @@
                 that.validYears.push(i);
             }
         }
-
-        this.tryApplyDateFromTargetUsingjQuery = function () {
-            if (that.target[0].tagName.toLowerCase() === 'input')
-            {
-                that.targetText = that.target.val();
-            }
-            else
-            {
-                that.targetText = that.target.html();
-            }
-            
-            var date = parseDate(that.targetText);
-
-            // if date is valid and in range build calendar if needed
-            if (date !== null && isDateInRange(date)) {
-                // sets the that.selectedMonth and that.selectedYear if different
-                var updated = setMonthYear(date);
-
-                // build calendar only if month or year changed
-                if (updated === true) {
-                    buildCalendar();
-                }
-
-                applySelection(date, true);
-            }
-        }
-
-        this.activateOnInit = function () {
-            activeInstanceId = that.instanceId;
-            
-            that.tryApplyDateFromTargetUsingjQuery();
-
-            that.show();
-        }
+  
         
         this.tryApplyDateFromTarget = function () {
             if (that.textModelCtrl === null) {
@@ -387,6 +376,8 @@
             }
 
             that.targetText = that.textModelCtrl.$viewValue;
+
+            //that.targetText = that.textModelCtrl.$viewValue;
             var date = parseDate(that.targetText);
 
             // if date is valid and in range build calendar if needed
@@ -406,7 +397,15 @@
         this.activate = function () {
             activeInstanceId = that.instanceId;
 
-            that.tryApplyDateFromTarget();
+            // the textbox 
+            if (that.textModelCtrl !== null && parseDate(that.textModelCtrl.$viewValue) === null) {
+                if (!isUndefinedOrNull(that.selectedData)) {
+                    updateTargetModel(formatDate(that.selectedData.date));
+                }
+            }
+            else {
+                that.tryApplyDateFromTarget();
+            }
 
             that.show();
         }
@@ -964,7 +963,13 @@
         }
 
         function updateTargetModel(modelValue) {
+            // update only if different from current value
+//            if (modelValue !== targetViewValue()) {
+//                targetViewValue(modelValue);
+//            }
+            
             if (that.textModelCtrl === null) {
+                targetViewValue(modelValue);
                 return;
             }
 
@@ -972,10 +977,28 @@
             if (modelValue !== that.textModelCtrl.$modelValue) {
                 that.textModelCtrl.$setViewValue(modelValue);
                 that.textModelCtrl.$render();
-
-                targetValue = modelValue;
             }
         }
+        
+//        function targetViewValue (value) {
+//            var targetTextFn;
+//            
+//            // ng-model is not applied or its not an input element
+//            // perhaps a <div>, <span> etc.
+//            if (that.target[0].tagName.toLowerCase() === 'input') {
+//                targetTextFn = that.target.val.bind(that.target);
+//            }
+//            else {
+//                targetTextFn = that.target.html.bind(that.target);
+//            }
+//            
+//            if (angular.isUndefined(value)) {
+//                return targetTextFn();
+//            }
+//            else {
+//                targetTextFn(value);
+//            }
+//        }
 
 
         datepickerLightService.defaultOptionsDoc = function () {
@@ -1007,6 +1030,7 @@
         dateFormat: 'MM/DD/YYYY',
         minDate: null,
         maxDate: null,
+        defaultDate: null,
         firstDayOfWeek: 0,
         showOtherMonthDates: false,
         containerCssClass: null,
