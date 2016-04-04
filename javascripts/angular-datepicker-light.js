@@ -571,22 +571,22 @@
 
         
         this.getDate = function() {
-            if (!isUndefinedOrNull(ctrl.selectedData) && angular.isObject(ctrl.selectedData)) {
-                return ctrl.selectedData.date;
+            if (!isUndefinedOrNull(that.selectedData) && angular.isObject(that.selectedData)) {
+                return that.selectedData.date;
             }
         }
         
         this.setDate = function(dateToSelect) {
             if (angular.isDate(dateToSelect) && isDateInRange(dateToSelect))
             {
-                ctrl.dateSelect(getCellData(dateToSelect));
+                that.dateSelect(getCellData(dateToSelect));
                 return;
             }
             
             var date = parseDate(dateToSelect);
             
             if (!isUndefinedOrNull(date) && isDateInRange(date)) {
-                ctrl.dateSelect(getCellData(date));
+                that.dateSelect(getCellData(date));
             }
         }
         
