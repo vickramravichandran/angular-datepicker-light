@@ -986,7 +986,7 @@
 
             // use the .position() function from jquery.ui if available
             // requires both jquery and jquery-ui to be loaded
-            if (window.jQuery && window.jQuery.ui) {
+            if ($window.jQuery && $window.jQuery.ui) {
                 var pos = {
                     my: "left top",
                     at: "left bottom",
@@ -1000,8 +1000,8 @@
 
                 that.container.position(pos);
             } else {
-                var scrollTop = $document[0].body.scrollTop || $document[0].documentElement.scrollTop || $window.pageYOffset,
-        scrollLeft = $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft || $window.pageXOffset;
+                var scrollTop = $document[0].body.scrollTop || $document[0].documentElement.scrollTop || $window.pageYOffset;
+                var scrollLeft = $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft || $window.pageXOffset;
 
                 that.container.css({
                     "left": rect.left + scrollLeft + "px"
