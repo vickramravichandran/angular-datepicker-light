@@ -388,7 +388,7 @@
         }
         
         this.ready = function() {
-            safeCallback(that.options.ready, methods());
+            safeCallback(that.options.ready, methods);
         }
 
 
@@ -577,16 +577,23 @@
         }
         
         this.setDate = function(dateToSelect) {
-            if (angular.isDate(dateToSelect) && isDateInRange(dateToSelect))
-            {
+            if (isUndefinedOrNull(dateToSelect)) {
+                return;
+            }
+            
+            // is it a Date object?
+            if (angular.isDate(dateToSelect) && isDateInRange(dateToSelect)) {
                 that.dateSelect(getCellData(dateToSelect));
                 return;
             }
             
-            var date = parseDate(dateToSelect);
+            // parse string
+            if (angular.isString(dateToSelect)) {
+                var date = parseDate(dateToSelect);
             
-            if (!isUndefinedOrNull(date) && isDateInRange(date)) {
-                that.dateSelect(getCellData(date));
+                if (!isUndefinedOrNull(date) && isDateInRange(date)) {
+                    that.dateSelect(getCellData(date));
+                }
             }
         }
         
@@ -635,22 +642,19 @@
                 month = 11;
                 year--;
             }
-
-            // restrict based on min date
-            // adjust month to 1-based because format date returns month as 1-based
-            var monthPlusOne = month + 1;
-            var leadingZero = monthPlusOne < 10 ? "0" : "";
-            if (parseInt(year + "" + leadingZero + monthPlusOne) < parseInt(formatDate(minDate, 'YYYYMM'))) {
+            
+            if (isMonthYearInRange(month, year)) {
+                return {
+                    month: month,
+                    year: year
+                };
+            }
+            else {
                 return {
                     month: monthCopy,
                     year: yearCopy
                 };
             }
-
-            return {
-                month: month,
-                year: year
-            };
         }
 
         function getNextMonthYear(month, year) {
@@ -664,25 +668,41 @@
                 year++;
             }
 
-            // restrict based on max date
-            // adjust month to 1-based because format date returns month as 1-based
-            var monthPlusOne = month + 1;
-            var leadingZero = monthPlusOne < 10 ? "0" : "";
-            if (parseInt(year + "" + leadingZero + monthPlusOne) > parseInt(formatDate(maxDate, 'YYYYMM'))) {
+            if (isMonthYearInRange(month, year)) {
+                return {
+                    month: month,
+                    year: year
+                };
+            }
+            else {
                 return {
                     month: monthCopy,
                     year: yearCopy
                 };
             }
-
-            return {
-                month: month,
-                year: year
-            };
+            
+//            return {
+//                month: month,
+//                year: year
+//            };
         }
 
-        // sets that.selectedMonth and that.selectedYear if different
-        // return true if the properties were set
+        function isMonthYearInRange (month, year) {
+            // adjust month to 1-based because format date returns month as 1-based
+            var monthPlusOne = month + 1;
+            var leadingZero = monthPlusOne < 10 ? "0" : "";
+            
+            if (parseInt(year + leadingZero + monthPlusOne) < parseInt(formatDate(minDate, 'YYYYMM'))
+                || parseInt(year + leadingZero + monthPlusOne) > parseInt(formatDate(maxDate, 'YYYYMM'))) {
+                
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // sets that.selectedMonth and that.selectedYear if different.
+        // returns true if the properties were set
         function setMonthYear(date) {
             var month = date.getMonth();
             var year = date.getFullYear();
@@ -1039,8 +1059,25 @@
             return defaultOptionsDoc;
         }
         
-        var methods = function () {
+        var methods = (function () {
             return {
+                getMonthYear: function () {
+                    return {
+                        month: that.selectedMonth,
+                        year: that.selectedYear
+                    };
+                },
+                
+                gotoMonthYear: function (month, year) {
+                    // month starts at 0
+                    if (isMonthYearInRange(month - 1, year)) {
+                        that.selectedMonth = month - 1;
+                        that.selectedYear = year;
+                        
+                        buildCalendar();
+                    }
+                },
+                
                 getDate: function () {
                     return that.getDate();
                 },
@@ -1061,7 +1098,7 @@
                     that.buildCalendar();
                 }
             }
-        }
+        })();
     }
 
     function datepickerLightService() {
