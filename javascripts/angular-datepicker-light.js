@@ -649,12 +649,11 @@
                     year: year
                 };
             }
-            else {
-                return {
-                    month: monthCopy,
-                    year: yearCopy
-                };
-            }
+            
+            return {
+                month: monthCopy,
+                year: yearCopy
+            };
         }
 
         function getNextMonthYear(month, year) {
@@ -674,19 +673,14 @@
                     year: year
                 };
             }
-            else {
-                return {
-                    month: monthCopy,
-                    year: yearCopy
-                };
-            }
             
-//            return {
-//                month: month,
-//                year: year
-//            };
+            return {
+                month: monthCopy,
+                year: yearCopy
+            };            
         }
 
+        // returns true if the month and year are within min date and max date
         function isMonthYearInRange (month, year) {
             // adjust month to 1-based because format date returns month as 1-based
             var monthPlusOne = month + 1;
@@ -1055,15 +1049,12 @@
         }
 
 
-        datepickerLightService.defaultOptionsDoc = function () {
-            return defaultOptionsDoc;
-        }
-        
         var methods = (function () {
             return {
                 getMonthYear: function () {
+                    // month starts at 0
                     return {
-                        month: that.selectedMonth,
+                        month: that.selectedMonth + 1,
                         year: that.selectedYear
                     };
                 },
@@ -1085,20 +1076,16 @@
                 setDate: function (date) {
                     that.setDate(date);
                 },
-            
-                hide: function () {
-                    that.hide();
-                },
-            
-                show: function () {
-                    that.show();
-                },
-            
+
                 refresh: function () {
                     that.buildCalendar();
                 }
             }
         })();
+        
+        datepickerLightService.defaultOptionsDoc = function () {
+            return defaultOptionsDoc;
+        }
     }
 
     function datepickerLightService() {
@@ -1177,7 +1164,14 @@
         },
         ready: {
             def: "noop",
-            doc: "Callback after the datepicker is initialized and ready."
+            doc: "Callback after the datepicker is initialized and ready. The function receives an object with the following methods:",
+            docArray: [    
+                {"getMonthYear": "Returns an object with the selected month and year."},
+                {"gotoMonthYear (month, year)": "Sets the selected month and year. The month and year must be within minDate and maxDate."},
+                {"getDate": "Returns the selected date."},
+                {"setDate (date)": "Sets the selected date in the calendar. Set to an actual Date object or as a string in the current dateFormat. The date must be within minDate and maxDate."},
+                {"refresh": "Rebuilds the calendar."}
+            ]
         },
         monthYearChanged: {
             def: "noop",
@@ -1193,7 +1187,14 @@
         },
         renderDate: {
             def: "noop",
-            doc: "Callback when the calendar is being rendered. This is called for each date in the calendar. The function receives an object with 'date' as parameter. Return a object with 'cssClass', 'enabled':(true/false)', 'selected:(true/false)', 'tooltip' and 'data' to store any arbitrary data on the date cell."
+            doc: "Callback when the calendar is being rendered. This is called for each date in the calendar. The function receives an object with 'date' as parameter. Return an object with the following properties:",
+            docArray: [ 
+                {"cssClass": "The CSS class to apply to the date cell."},
+                {"enabled": "Set to false to disable a date."},
+                {"selected": "Set to true to select a date."},
+                {"tooltip": "Tooltip for the date html table cell."},
+                {"data": "Set to any arbitrary data on the date cell."}
+            ]
         },
         beforeDateSelect: {
             def: "noop",

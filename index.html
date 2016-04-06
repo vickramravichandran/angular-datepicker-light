@@ -322,7 +322,7 @@
         vm.datepickerOptions = {
             inline: true 
         };
-    }
+
 </code></pre>
                                 </div>
                             </div>
@@ -340,6 +340,15 @@
                                 <td>
                                     <i>Default: {{val.def}}</i>
                                     <div ng-bind-html="val.doc"></div>
+                                    <div ng-if="val.docArray">
+                                        <ul>
+                                            <li ng-repeat="docar in val.docArray">
+                                                <span ng-repeat="(key, val) in docar">
+                                                    <b>{{key}}:</b> {{val}}
+                                                </span>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
