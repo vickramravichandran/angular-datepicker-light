@@ -91,6 +91,22 @@ body {
     color: #3A4145;
 }
 
+html.ie6 body,
+html.ie7 body,
+html.ie8 body,
+html.ie9 body,
+html.ie10 body,
+html.ie11 body {
+	font-size: 1.6em;
+}
+
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+	/* IE10+ CSS styles go here */
+	body {
+		font-size: 1.6em;	
+	}
+} 
+
 @media (max-width: 800px) {
     body {
         font-size: 0.9em;
