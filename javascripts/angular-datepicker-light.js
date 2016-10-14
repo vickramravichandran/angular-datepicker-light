@@ -185,7 +185,7 @@
                 // hide the active calendar if user clicks anywhere away from the dropdown list
                 var offset = ctrl.container[0].getBoundingClientRect();
                 var isMouseAwayFromActiveContainer = false;
-                var awayTolerance = 500;
+                var awayTolerance = ctrl.options.datepickerClickMargin;
 
                 //check if mouse is over the container
                 if (e.pageX < offset.left - awayTolerance
@@ -1078,7 +1078,7 @@
                 },
 
                 refresh: function () {
-                    that.buildCalendar();
+                    buildCalendar();
                 }
             }
         })();
@@ -1116,6 +1116,7 @@
         firstDayOfWeek: 0,
         showOtherMonthDates: false,
         containerCssClass: null,
+        datepickerClickMargin: 100,
         ready: angular.noop,
         monthYearChanged: angular.noop,
         datepickerShown: angular.noop,
@@ -1161,6 +1162,10 @@
         containerCssClass: {
             def: "null",
             doc: "CSS class applied to the datepicker container"
+        },
+        datepickerClickMargin: {
+            def: "100",
+            doc: "Defines the margin in pixels around the datepicker when inline is set to false. Clicking outside this margin closes the datepicker."
         },
         ready: {
             def: "noop",
