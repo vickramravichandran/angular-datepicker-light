@@ -185,7 +185,7 @@
                 // hide the active calendar if user clicks anywhere away from the dropdown list
                 var offset = ctrl.container[0].getBoundingClientRect();
                 var isMouseAwayFromActiveContainer = false;
-                var awayTolerance = 500;
+                var awayTolerance = ctrl.options.datepickerClickMargin;
 
                 //check if mouse is over the container
                 if (e.pageX < offset.left - awayTolerance
@@ -344,9 +344,8 @@
   
         
         this.tryApplyDateFromTarget = function () {
-            // textModelCtrl will be null if ng-model directive 
-            // is not applied to the input element or may be the target is a non-input div, span etc.
-            // in this scenario get using jquery
+            // textModelCtrl will be null if ng-model directive is not applied to the input element 
+            // or the target is a non-input div, span etc. in which case we get the element using jquery
             if (that.textModelCtrl === null) {
                 that.targetText = jQueryTargetValue();
             }
@@ -1078,7 +1077,7 @@
                 },
 
                 refresh: function () {
-                    that.buildCalendar();
+                    buildCalendar();
                 }
             }
         })();
@@ -1116,6 +1115,7 @@
         firstDayOfWeek: 0,
         showOtherMonthDates: false,
         containerCssClass: null,
+        datepickerClickMargin: 100,
         ready: angular.noop,
         monthYearChanged: angular.noop,
         datepickerShown: angular.noop,
@@ -1132,7 +1132,7 @@
         },
         inline: {
             def: "false",
-            doc: "If set to true displays the calendar inline below the target. Alternatively, set to a jQuery element to append the calendar."
+            doc: "If set to true displays the datepicker inline below the target. Alternatively, set to a jQuery element to append the datepicker."
         },
         dateFormat: {
             def: "MM/DD/YYYY",
@@ -1162,6 +1162,10 @@
             def: "null",
             doc: "CSS class applied to the datepicker container"
         },
+        datepickerClickMargin: {
+             def: "100",
+             doc: "Defines the margin in pixels around the datepicker when inline is set to false. Clicking outside this margin closes the datepicker."
+        },
         ready: {
             def: "noop",
             doc: "Callback after the datepicker is initialized and ready. The function receives an object with the following methods:",
@@ -1169,8 +1173,8 @@
                 {"getMonthYear": "Returns an object with the selected month and year."},
                 {"gotoMonthYear (month, year)": "Sets the selected month and year. The month and year must be within minDate and maxDate."},
                 {"getDate": "Returns the selected date."},
-                {"setDate (date)": "Sets the selected date in the calendar. Set to an actual Date object or as a string in the current dateFormat. The date must be within minDate and maxDate."},
-                {"refresh": "Rebuilds the calendar."}
+                {"setDate (date)": "Sets the selected date in the datepicker. Set to an actual Date object or as a string in the current dateFormat. The date must be within minDate and maxDate."},
+                {"refresh": "Rebuilds the datepicker."}
             ]
         },
         monthYearChanged: {
@@ -1187,7 +1191,7 @@
         },
         renderDate: {
             def: "noop",
-            doc: "Callback when the calendar is being rendered. This is called for each date in the calendar. The function receives an object with 'date' as parameter. Return an object with the following properties:",
+            doc: "Callback when the datepicker is being rendered. This is called for each date in the datepicker. The function receives an object with 'date' as parameter. Return an object with the following properties:",
             docArray: [ 
                 {"cssClass": "The CSS class to apply to the date cell."},
                 {"enabled": "Set to false to disable a date."},
