@@ -164,8 +164,7 @@
 
             // cleanup on destroy
             scope.$on('$destroy', function () {
-                ctrl.empty();
-                ctrl.container.remove();
+                ctrl = {};
             });
 
             function _documentKeyDown(e) {
