@@ -92,7 +92,9 @@
                                 <div>
 <pre><code class="language-markup">&lt;body ng-app="mainApp">
     &lt;div ng-controller="OnFocusCtrl as vm">
-        &lt;input type="text" ng-model="vm.date" />
+        &lt;input type="text" 
+               ng-model="vm.date"
+               angular-datepicker-light="vm.datepickerOptions" />
         &lt;span id="calendarIcon"&gt;&lt;/span>
     &lt;/div>
 &lt;/body>
