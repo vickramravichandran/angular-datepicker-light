@@ -163,9 +163,13 @@
             });
 
             // cleanup on destroy
-            scope.$on('$destroy', function () {
-                ctrl.empty();
-                ctrl.container.remove();
+            var destroyFn = scope.$on('$destroy', function () {
+                if (ctrl.container) {
+                    ctrl.container.remove();
+                    ctrl.container = null; 
+                }
+
+                destroyFn()
             });
 
             function _documentKeyDown(e) {
@@ -179,6 +183,11 @@
 
                 // we care about the active non-inline one only
                 if (ctrl.instanceId !== ctrl.activeInstanceId() || ctrl.isInline()) {
+                    return;
+                }
+
+                // no container. probably destroyed in scope $destroy 
+                if (!ctrl.container) {
                     return;
                 }
 
