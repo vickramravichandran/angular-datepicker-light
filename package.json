@@ -1,7 +1,7 @@
 {
   "name": "angular-datepicker-light",
-  "version": "1.2.1",
-  "description": "AngularJS datepicker plugin",
+  "version": "1.2.2",
+  "description": "AngularJS datepicker plugin-zz",
   "main": "angular-datepicker-light.js",
   "homepage": "http://www.vickram.me/angular-datepicker-light-plugin/",
   "author": "Vickram Ravichandran (http://vickram.me)",
@@ -15,10 +15,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/vickramravichandran/angular-datepicker-light.git"
+    "url": "https://github.com/ziaulrehmandevsinc/angular-datepicker-light.git"
   },
   "bugs": {
-    "url": "https://github.com/vickramravichandran/angular-datepicker-light/issues "
+    "url": "https://github.com/ziaulrehmandevsinc/angular-datepicker-light/issues "
   },
   "devDependencies": {
     "gulp": "^3.9.1",

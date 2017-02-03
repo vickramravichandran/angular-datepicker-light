@@ -1,11 +1,12 @@
 {
-  "name": "angular-datepicker-light",
-  "version": "1.2.1",
-  "description": "AngularJS datepicker plugin",
+  "name": "angular-datepicker-light-zz",
+  "version": "1.2.2",
+  "description": "AngularJS datepicker plugin-zz",
   "main": "angular-datepicker-light.js",
   "homepage": "http://www.vickram.me/angular-datepicker-light-plugin/",
   "authors": [
-    "Vickram Ravichandran (http://vickram.me)"
+    "Vickram Ravichandran (http://vickram.me)",
+    "Zia Ul Rehman"
   ],
   "license": "MIT",
   "keywords": [
