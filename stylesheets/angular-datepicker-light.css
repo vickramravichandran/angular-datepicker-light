@@ -1,3 +1,16 @@
+.ui-select-year {
+    width: 8rem;
+    margin-left: 10px;
+}
+
+.ui-select-month {
+    width: 10rem;
+}
+
+.selectize-input > div {
+    font-size: 13px;
+}
+
 div.datepicker-container {
     width: 320px;
     font-family: Helvetica, Arial, sans-serif;
@@ -41,12 +54,12 @@ div.datepicker-container > div.top-panel {
     }
 
     div.datepicker-container > div.top-panel a.prev {
-        background-image: url(images/chevron-left.png);
+        background-image: image-url("angular-datepicker-light/stylesheets/images/chevron-left.png");
     }
 
     div.datepicker-container > div.top-panel a.next {
         margin-left: 15px;
-        background-image: url(images/chevron-right.png);
+        background-image: image-url("angular-datepicker-light/stylesheets/images/chevron-right.png");
     }
 
     div.datepicker-container > div.top-panel select {
@@ -111,7 +124,7 @@ div.datepicker-container > div.middle-panel > table.calendar {
             }
 
 div.datepicker-container > div.bottom-panel {
-    padding: 10px 0px;
+    padding-bottom: 5px;
 }
 
     div.datepicker-container > div.bottom-panel > table.calendar {
@@ -127,8 +140,17 @@ div.datepicker-container > div.bottom-panel {
             border: 0px;
         }
 
-    div.datepicker-container > div.bottom-panel a.today {
+    div.datepicker-container > div.bottom-panel .calendar {
         font-weight: bold;
         color: #0028EA;
         text-decoration: none;
+        cursor: pointer;
     }
+    div.datepicker-container > div.bottom-panel .calendar:hover {
+        background: rgba(128, 128, 128, 0.28);
+    }
+
+.hide-container {
+    display: none;
+}
+

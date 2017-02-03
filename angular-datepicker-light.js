@@ -66,11 +66,14 @@
             ctrl.init(angular.extend({
             }, defaultOptions, options));
 
-            // store the jquery element on the controller          
+            // store the jquery element on the controller
             ctrl.target = element;
 
-            initContainer(html);
-            
+            if(ctrl.isUiSelectEnabled())
+                initContainer(html_uiselect);
+            else
+                initContainer(html);
+
             function initContainer(template) {
                 var templateFn = $compile(template);
                 ctrl.container = templateFn(scope);
@@ -79,18 +82,24 @@
                     ctrl.container.addClass(ctrl.options.containerCssClass);
                 }
 
-                // if inline == true append container after the textbox
-                if (ctrl.options.inline === true) {
+                // if a jquery parent is specified in options append the container
+                if (angular.isElement(ctrl.options.inline)) {
+                    ctrl.options.inline.append(ctrl.container);
+
+                    // else append container after the textbox
+                } else {
                     element.after(ctrl.container);
                 }
-                    // if a jquery parent is specified in options append the container
-                else if (angular.isElement(ctrl.options.inline)) {
-                    ctrl.options.inline.append(ctrl.container);
-                    // else append container to body                    
-                } else {
-                    $document.find("body").append(ctrl.container);
+
+                // if container is not inline, than make its position absolute
+                if (!ctrl.isInline()) {
                     ctrl.container.addClass("datepicker-absolute-container");
                 }
+
+                if(ctrl.hideTodayDateEnabled()) {
+                    angular.element(".bottom-panel").addClass("hide-container")
+                }
+
 
                 // if a jquery altTarget is specified in options append the container
                 // altTarget supported only for non-inline
@@ -108,14 +117,14 @@
                     return false;
                 });
             }
-            
+
             $document.ready(function(){
                 // activate all inline date pickers and call ready callback
                 scope.$evalAsync(function () {
                     if (ctrl.isInline()) {
                         ctrl.activate();
                     }
-                    
+
                     ctrl.ready();
                 });
             })
@@ -166,7 +175,7 @@
             var destroyFn = scope.$on('$destroy', function () {
                 if (ctrl.container) {
                     ctrl.container.remove();
-                    ctrl.container = null; 
+                    ctrl.container = null;
                 }
 
                 destroyFn()
@@ -186,7 +195,7 @@
                     return;
                 }
 
-                // no container. probably destroyed in scope $destroy 
+                // no container. probably destroyed in scope $destroy
                 if (!ctrl.container) {
                     return;
                 }
@@ -243,7 +252,7 @@
             maxDate = null,
             calendarItems = [];
 
-        var monthNamesLong = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
+        var monthNamesLong = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         //var monthNamesShort = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 
         var dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -285,6 +294,15 @@
                 || angular.isElement(that.options.inline);
         }
 
+        this.isUiSelectEnabled = function () {
+            // options.useAngularUiSelect can be either true or false
+            return that.options.useAngularUiSelect === true;
+        }
+
+        this.hideTodayDateEnabled = function () {
+            // options.useAngularUiSelect can be either true or false
+            return that.options.hideTodayDate === true;
+        }
 
         this.init = function (options) {
             that.options = options;
@@ -294,16 +312,19 @@
 
             minDate = parseDate(that.options.minDate);
             maxDate = parseDate(that.options.maxDate);
-            
+
+            prevYers = that.options.prevYers;
+            nextYears = that.options.nextYears;
+
             // set min and max date values
             // if not provided in options default minDate to 1/1/(-5 years) and maxDate to 12/31/(+5 years) of next year
             if (isUndefinedOrNull(minDate)) {
-                minDate = new Date(now.getFullYear() - 5, 0, 1);
+                minDate = new Date(now.getFullYear() - prevYers, 0, 1);
             }
 
             // maxdate
             if (isUndefinedOrNull(maxDate)) {
-                maxDate = new Date(now.getFullYear() + 5, 11, 31);
+                maxDate = new Date(now.getFullYear() + nextYears, 11, 31);
             }
 
             // create day names array starting at options.firstDayOfWeek
@@ -338,11 +359,11 @@
             that.todayDateDisplay = formatDate(now, "ddd MMM DD YYYY");
 
             var defaultDate = getDefaultDate();
-            
+
             that.selectedMonth = defaultDate.getMonth();
             that.selectedYear = defaultDate.getFullYear();
             that.selectedData = getCellData(defaultDate);
-            
+
             buildCalendar();
 
             // build years array
@@ -350,16 +371,16 @@
                 that.validYears.push(i);
             }
         }
-  
-        
+
+
         this.tryApplyDateFromTarget = function () {
-            // textModelCtrl will be null if ng-model directive is not applied to the input element 
+            // textModelCtrl will be null if ng-model directive is not applied to the input element
             // or the target is a non-input div, span etc. in which case we get the element using jquery
             if (that.textModelCtrl === null) {
                 that.targetText = jQueryTargetValue();
             }
             else {
-                that.targetText = that.textModelCtrl.$viewValue;    
+                that.targetText = that.textModelCtrl.$viewValue;
             }
 
             var date = parseDate(that.targetText);
@@ -377,24 +398,26 @@
                 applySelection(date, true);
             }
         }
-        
+
         this.activate = function () {
             activeInstanceId = that.instanceId;
 
             // update the the target with the current selected date if the target text is not a valid date
             var targetValue = jQueryTargetValue();
+
             if (targetValue === null || targetValue.length === 0 || parseDate(targetValue) === null) {
                 if (!isUndefinedOrNull(that.selectedData)) {
                     updateTargetModel(formatDate(that.selectedData.date));
                 }
             }
             else {
+                //updateTargetModel(formatDate(targetValue));
                 that.tryApplyDateFromTarget();
             }
 
             that.show();
         }
-        
+
         this.ready = function() {
             safeCallback(that.options.ready, methods);
         }
@@ -507,13 +530,6 @@
 
 
         this.show = function () {
-            // position calendar if not displayed inline
-            if (!that.isInline()) {
-                // the textbox position can change (ex: window resize)
-                // so reposition the datepicker before it's shown
-                positionDatepicker();
-            }
-
             that.containerVisible = true;
 
             // callback
@@ -577,43 +593,43 @@
             return false;
         }
 
-        
+
         this.getDate = function() {
             if (!isUndefinedOrNull(that.selectedData) && angular.isObject(that.selectedData)) {
                 return that.selectedData.date;
             }
         }
-        
+
         this.setDate = function(dateToSelect) {
             if (isUndefinedOrNull(dateToSelect)) {
                 return;
             }
-            
+
             // is it a Date object?
             if (angular.isDate(dateToSelect) && isDateInRange(dateToSelect)) {
                 that.dateSelect(getCellData(dateToSelect));
                 return;
             }
-            
+
             // parse string
             if (angular.isString(dateToSelect)) {
                 var date = parseDate(dateToSelect);
-            
+
                 if (!isUndefinedOrNull(date) && isDateInRange(date)) {
                     that.dateSelect(getCellData(date));
                 }
             }
         }
-        
+
 
         function getDefaultDate() {
             var defaultDate;
-            
+
             // if defaultDate is not provided default to today
             if (isUndefinedOrNull(that.options.defaultDate)) {
                 return that.todayDate;
             }
-            
+
             // is it a date instance?
             if (angular.isDate(that.options.defaultDate)) {
                 defaultDate = that.options.defaultDate;
@@ -630,16 +646,16 @@
                     defaultDate = date;
                 }
             }
-            
+
             // at this point defaultDate is either 'today' or 'options.defaultDate'
             // if defaultDate is outside valid date range default to todayDate
             if (!isDateInRange(defaultDate)) {
                 defaultDate = that.todayDate;
             }
-            
+
             return defaultDate;
         }
-        
+
         function getPreviousMonthYear(month, year) {
             var monthCopy = month,
                 yearCopy = year;
@@ -650,14 +666,14 @@
                 month = 11;
                 year--;
             }
-            
+
             if (isMonthYearInRange(month, year)) {
                 return {
                     month: month,
                     year: year
                 };
             }
-            
+
             return {
                 month: monthCopy,
                 year: yearCopy
@@ -681,11 +697,11 @@
                     year: year
                 };
             }
-            
+
             return {
                 month: monthCopy,
                 year: yearCopy
-            };            
+            };
         }
 
         // returns true if the month and year are within min date and max date
@@ -693,16 +709,16 @@
             // adjust month to 1-based because format date returns month as 1-based
             var monthPlusOne = month + 1;
             var leadingZero = monthPlusOne < 10 ? "0" : "";
-            
+
             if (parseInt(year + leadingZero + monthPlusOne) < parseInt(formatDate(minDate, 'YYYYMM'))
                 || parseInt(year + leadingZero + monthPlusOne) > parseInt(formatDate(maxDate, 'YYYYMM'))) {
-                
+
                 return false;
             }
-            
+
             return true;
         }
-        
+
         // sets that.selectedMonth and that.selectedYear if different.
         // returns true if the properties were set
         function setMonthYear(date) {
@@ -933,7 +949,9 @@
 
 
         function parseDate(value) {
-            var mom = moment(value, that.options.dateFormat);
+
+            var mom =  moment(value, that.options.dateFormat);
+
             if (!mom.isValid()) {
                 return null;
             }
@@ -959,11 +977,25 @@
         function isDateInRange(date) {
             var momDate = moment(date);
 
-            var momMinDate = moment(minDate);
-            var momMaxDate = moment(maxDate);
+            //if min date is defined
+            if( that.options.minDate ) {
 
-            return momDate.isSameOrAfter(momMinDate, 'd')
-                && momDate.isSameOrBefore(momMaxDate, 'd');
+                var momMinDate = moment(minDate);
+                // and max date is also defined
+                if( that.options.maxDate ){
+
+                    var momMaxDate = moment(maxDate);
+
+                    return momDate.isSameOrAfter(momMinDate, 'd')
+                        && momDate.isSameOrBefore(momMaxDate, 'd');
+                }
+                return momDate.isSameOrAfter(momMinDate, 'd');
+            }
+            else if( that.options.maxDate ){ // if only max date is defined
+                return momDate.isSameOrBefore(momMaxDate, 'd');
+            }
+
+            return true;
         }
 
         function areDatesEqual(date1, date2) {
@@ -1021,7 +1053,7 @@
         }
 
         function updateTargetModel(modelValue) {
-            // textModelCtrl will be null if ng-model directive 
+            // textModelCtrl will be null if ng-model directive
             // is not applied to the input element or may be the target is a non-input div, span etc.
             // in this scenario try updating using jquery
             if (that.textModelCtrl === null) {
@@ -1035,10 +1067,10 @@
                 that.textModelCtrl.$render();
             }
         }
-        
+
         function jQueryTargetValue (value) {
             var targetTextFn;
-            
+
             // ng-model is not applied or its not an input element
             // perhaps a <div>, <span> etc.
             if (that.target[0].tagName.toLowerCase() === 'input') {
@@ -1047,7 +1079,7 @@
             else {
                 targetTextFn = that.target.html.bind(that.target);
             }
-            
+
             if (angular.isUndefined(value)) {
                 return targetTextFn().trim();
             }
@@ -1066,21 +1098,21 @@
                         year: that.selectedYear
                     };
                 },
-                
+
                 gotoMonthYear: function (month, year) {
                     // month starts at 0
                     if (isMonthYearInRange(month - 1, year)) {
                         that.selectedMonth = month - 1;
                         that.selectedYear = year;
-                        
+
                         buildCalendar();
                     }
                 },
-                
+
                 getDate: function () {
                     return that.getDate();
                 },
-            
+
                 setDate: function (date) {
                     that.setDate(date);
                 },
@@ -1090,7 +1122,7 @@
                 }
             }
         })();
-        
+
         datepickerLightService.defaultOptionsDoc = function () {
             return defaultOptionsDoc;
         }
@@ -1131,7 +1163,11 @@
         datepickerHidden: angular.noop,
         renderDate: angular.noop,
         beforeDateSelect: angular.noop,
-        dateSelected: angular.noop
+        dateSelected: angular.noop,
+        useAngularUiSelect: false,
+        hideTodayDate: false,
+        prevYers: 5,
+        nextYears: 5
     };
 
     var defaultOptionsDoc = {
@@ -1143,9 +1179,9 @@
             def: "false",
             doc: "If set to true displays the datepicker inline below the target. Alternatively, set to a jQuery element to append the datepicker."
         },
-        dateFormat: {
+        inputDateFormat: {
             def: "MM/DD/YYYY",
-            doc: "The date format used to parse and display dates. For a full list of the possible formats see the <a href='http://momentjs.com/docs/#/displaying/format/'>momentjs documentation<a>"
+            doc: "The date format used to parse input dates."
         },
         defaultDate: {
             def: "null",
@@ -1178,7 +1214,7 @@
         ready: {
             def: "noop",
             doc: "Callback after the datepicker is initialized and ready. The function receives an object with the following methods:",
-            docArray: [    
+            docArray: [
                 {"getMonthYear": "Returns an object with the selected month and year."},
                 {"gotoMonthYear (month, year)": "Sets the selected month and year. The month and year must be within minDate and maxDate."},
                 {"getDate": "Returns the selected date."},
@@ -1201,7 +1237,7 @@
         renderDate: {
             def: "noop",
             doc: "Callback when the datepicker is being rendered. This is called for each date in the datepicker. The function receives an object with 'date' as parameter. Return an object with the following properties:",
-            docArray: [ 
+            docArray: [
                 {"cssClass": "The CSS class to apply to the date cell."},
                 {"enabled": "Set to false to disable a date."},
                 {"selected": "Set to true to select a date."},
@@ -1216,87 +1252,126 @@
         dateSelected: {
             def: "noop",
             doc: "Callback after a date is selected. The function receives an object with 'date' and 'data' properties."
+        },
+        useAngularUiSelect: {
+            def: "false",
+            doc: "Specifies if ui-select should be used for drop-downs. Note that we assume if this is true, than ui-select is already included in project."
+        },
+        hideTodayDate: {
+            def: "false",
+            doc: "Hides bottom panel from calender display. Which is used to display today date."
+        },
+        prevYers: {
+            def: "5",
+            doc: "Sets number of previous years(from current year) to display in year drop-down. NOTE if minDate is defined, this will be ignored in min date's favor."
+        },
+        nextYears: {
+            def: "5",
+            doc: "Sets number of next years(from current year) to display in year drop-down. NOTE if maxDate is defined, this will be ignored in min date's favor"
         }
     };
 
-    
-    var html = "";
-    
-    html += '<div class="datepicker-container" data-instance-id="{{ctrl.instanceId}}" ng-show="ctrl.containerVisible">';
-    html += '<div class="top-panel">';
-    html += '    <table class="calendar" border="0" cellpadding="0" cellspacing="0">';
-    html += '        <tbody>';
-    html += '            <tr>';
-    html += '                <td style="text-align:left">';
-    html += '                    <select class="months" ';
-    html += '                            ng-change="ctrl.monthChange(ctrl.selectedMonth)"';
-    html += '                            ng-model="ctrl.selectedMonth"';
-    html += '                            ng-options="item.index as item.name for item in ctrl.monthNames">';
-    html += '                    </select>';
-    html += '                    <select class="years" ';
-    html += '                            ng-model="ctrl.selectedYear"';
-    html += '                            ng-change="ctrl.yearChange(ctrl.selectedYear)"';
-    html += '                            ng-options="item for item in ctrl.validYears"></select>';
-    html += '                </td>';
-    html += '                <td style="text-align:right">';
-    html += '                    <div>';
-    html += '                        <a class="prev" ';
-    html += '                           ng-click="ctrl.gotoPreviousMonth(ctrl.selectedMonth, ctrl.selectedYear)"';
-    html += '                           href="javascript:void(0)" ';
-    html += '                           title="Previous Month"></a>';
-    html += '                        <a class="next" ';
-    html += '                           ng-click="ctrl.gotoNextMonth(ctrl.selectedMonth, ctrl.selectedYear)"';
-    html += '                           href="javascript:void(0)"' ;
-    html += '                           title="Next Month"></a>';
-    html += '                    </div>';
-    html += '                </td>';
-    html += '            </tr>';
-    html += '        </tbody>';
-    html += '    </table>';
-    html += '</div>';
-    html += '<div class="middle-panel">';
-    html += '    <table class="calendar" border="0" cellpadding="0" cellspacing="0">';
-    html += '        <thead>';
-    html += '            <tr>';
-    html += '                <th ng-repeat="day in ctrl.dayNames" style="width:14%">';
-    html += '                    {{day}}';
-    html += '                </th>';
-    html += '            </tr>';
-    html += '        </thead>';
-    html += '        <tbody>';
-    html += '            <tr>';
-    html += '                <td colspan="7">';
-    html += '                    &nbsp;';
-    html += '                </td>';
-    html += '            </tr>';
-    html += '            <tr class="week-row" ng-repeat="week in ctrl.weeks">';
-    html += '                <td ng-class="ctrl.dateCellCssClass(item)"';
-    html += '                    ng-click="ctrl.dateSelect(item)"';
-    html += '                    ng-repeat="item in week"';
-    html += '                    title="{{item.tooltip}}">';
-    html += '                    <span ng-if="ctrl.isDateVisible(item.date)">{{ctrl.dateDisplay(item)}}</span>';
-    html += '                </td>';
-    html += '            </tr>';
-    html += '            <tr class="week-row-placeholder" ng-if="ctrl.weeks.length < 6">';
-    html += '                <td ng-repeat="n in [7]">&nbsp;</td>';
-    html += '            </tr>';
-    html += '        </tbody>';
-    html += '    </table>';
-    html += '</div>';
-    html += '<div class="bottom-panel">';
-    html += '    <table class="calendar" border="0" cellpadding="0" cellspacing="0">';
-    html += '        <tbody>';
-    html += '            <tr class="today">';
-    html += '                <td style="text-align:left">';
-    html += '                    <a class="today" ';
-    html += '                       ng-click="ctrl.todayDateSelect()"';
-    html += '                       href="javascript:void(0)">Today {{ctrl.todayDateDisplay}}</a>';
-    html += '                </td>';
-    html += '                <td>&nbsp;</td>';
-    html += '            </tr>';
-    html += '        </tbody>';
-    html += '    </table>';
-    html += '</div>';
-    html += '</div>';
+
+    var html_p1 = "";
+
+    html_p1 += '<div class="datepicker-container" data-instance-id="{{ctrl.instanceId}}" ng-show="ctrl.containerVisible">';
+    html_p1 += '<div class="top-panel">';
+    html_p1 += '    <table class="calendar" border="0" cellpadding="0" cellspacing="0">';
+    html_p1 += '        <tbody>';
+    html_p1 += '            <tr>';
+
+    html_ui_select = "";
+    html_ui_select += '                <td style="text-align:left; display: flex;">';
+    html_ui_select += '                    <ui-select class="ui-select-month" ng-model="ctrl.selectedMonth" ng-change="ctrl.monthChange(ctrl.selectedMonth)" search-enabled="false" theme="selectize" ng-required>';
+    html_ui_select += '                          <ui-select-match> {{$select.selected.name}} </ui-select-match>';
+    html_ui_select += '                          <ui-select-choices repeat="item.index as item in ctrl.monthNames">';
+    html_ui_select += '                               <span ng-bind-html="item.name"></span>';
+    html_ui_select += '                          </ui-select-choices>';
+    html_ui_select += '                     </ui-select>';
+    html_ui_select += '                    <ui-select class="ui-select-year" ng-model="ctrl.selectedYear" ng-change="ctrl.yearChange(ctrl.selectedYear)" search-enabled="false" theme="selectize" ng-required>';
+    html_ui_select += '                          <ui-select-match> {{$select.selected}} </ui-select-match>';
+    html_ui_select += '                          <ui-select-choices repeat="item in ctrl.validYears">';
+    html_ui_select += '                               <span ng-bind-html="item"></span>';
+    html_ui_select += '                          </ui-select-choices>';
+    html_ui_select += '                     </ui-select>';
+
+
+    html_default_select = "";
+    html_default_select += '                <td style="text-align:left">';
+    html_default_select += '                    <select class="months" ';
+    html_default_select += '                            ng-change="ctrl.monthChange(ctrl.selectedMonth)"';
+    html_default_select += '                            ng-model="ctrl.selectedMonth"';
+    html_default_select += '                            ng-options="item.index as item.name for item in ctrl.monthNames">';
+    html_default_select += '                    </select>';
+    html_default_select += '                    <select class="years" ';
+    html_default_select += '                            ng-model="ctrl.selectedYear"';
+    html_default_select += '                            ng-change="ctrl.yearChange(ctrl.selectedYear)"';
+    html_default_select += '                            ng-options="item for item in ctrl.validYears"></select>';
+
+    html_p2 = "";
+    html_p2 += '                </td>';
+    html_p2 += '                <td style="text-align:right">';
+    html_p2 += '                    <div>';
+    html_p2 += '                        <a class="prev" ';
+    html_p2 += '                           ng-click="ctrl.gotoPreviousMonth(ctrl.selectedMonth, ctrl.selectedYear)"';
+    html_p2 += '                           href="javascript:void(0)" ';
+    html_p2 += '                           title="Previous Month"></a>';
+    html_p2 += '                        <a class="next" ';
+    html_p2 += '                           ng-click="ctrl.gotoNextMonth(ctrl.selectedMonth, ctrl.selectedYear)"';
+    html_p2 += '                           href="javascript:void(0)"' ;
+    html_p2 += '                           title="Next Month"></a>';
+    html_p2 += '                    </div>';
+    html_p2 += '                </td>';
+    html_p2 += '            </tr>';
+    html_p2 += '        </tbody>';
+    html_p2 += '    </table>';
+    html_p2 += '</div>';
+    html_p2 += '<div class="middle-panel">';
+    html_p2 += '    <table class="calendar" border="0" cellpadding="0" cellspacing="0">';
+    html_p2 += '        <thead>';
+    html_p2 += '            <tr>';
+    html_p2 += '                <th ng-repeat="day in ctrl.dayNames" style="width:14%">';
+    html_p2 += '                    {{day}}';
+    html_p2 += '                </th>';
+    html_p2 += '            </tr>';
+    html_p2 += '        </thead>';
+    html_p2 += '        <tbody>';
+    html_p2 += '            <tr>';
+    html_p2 += '                <td colspan="7">';
+    html_p2 += '                    &nbsp;';
+    html_p2 += '                </td>';
+    html_p2 += '            </tr>';
+    html_p2 += '            <tr class="week-row" ng-repeat="week in ctrl.weeks">';
+    html_p2 += '                <td ng-class="ctrl.dateCellCssClass(item)"';
+    html_p2 += '                    ng-click="ctrl.dateSelect(item)"';
+    html_p2 += '                    ng-repeat="item in week"';
+    html_p2 += '                    title="{{item.tooltip}}">';
+    html_p2 += '                    <span ng-if="ctrl.isDateVisible(item.date)">{{ctrl.dateDisplay(item)}}</span>';
+    html_p2 += '                </td>';
+    html_p2 += '            </tr>';
+    html_p2 += '            <tr class="week-row-placeholder" ng-if="ctrl.weeks.length < 6">';
+    html_p2 += '                <td ng-repeat="n in [7]">&nbsp;</td>';
+    html_p2 += '            </tr>';
+    html_p2 += '        </tbody>';
+    html_p2 += '    </table>';
+    html_p2 += '</div>';
+    html_p2 += '<div class="bottom-panel">';
+    html_p2 += '    <table class="calendar" ng-click="ctrl.todayDateSelect()" border="0" cellpadding="0" cellspacing="0">';
+    html_p2 += '        <tbody>';
+    html_p2 += '            <tr class="today">';
+    html_p2 += '                <td style="text-align:left">';
+    html_p2 += '                    <a class="today" ';
+    html_p2 += '                       href="javascript:void(0)">Today {{ctrl.todayDateDisplay}}</a>';
+    html_p2 += '                </td>';
+    html_p2 += '                <td>&nbsp;</td>';
+    html_p2 += '            </tr>';
+    html_p2 += '        </tbody>';
+    html_p2 += '    </table>';
+    html_p2 += '</div>';
+    html_p2 += '</div>';
+
+    var html = html_p1+html_default_select+html_p2;
+    var html_uiselect = html_p1+html_ui_select+html_p2;
 
 }));
+
