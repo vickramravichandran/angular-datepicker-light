@@ -6,13 +6,13 @@
 
 This plugin is heavily customized as per my need. But keeping in mind that this remains re-usable. If it's pull request gets accepted i might delete this repo, otherwise this repo/plugin will remain use-full(at-least for us).
 
-Below is intro of few customizations:
+Below is intro of main customizations:
 
-* Change positioning logic for non-inline usage
-* Prevent calender pop-up from being closed when a month or year is select from drop-down.
-* Add support for ui-select drop-down to facilitate projects using ui-select as standard drop-down
-* nextYeras, prevYears, hideTodayDate, useAngularUiSelect options added
-* Some style enhancements
+* Change positioning logic for non-inline usage(to solve problme in our complex view where previous logic was failing)
+* Prevent calender pop-up from being closed when a month or year is select from drop-down, to let users select full date in one go.
+* Add support for <a href="https://github.com/angular-ui/ui-select">ui-select</a> drop-down to facilitate projects using ui-select as standard drop-down
+* nextYeras, prevYears, hideTodayDate, useAngularUiSelect options added(see below for details).
+* Some style enhancements/adjustments.
 * Other minor adjustments
 
 ### Additional options details:
@@ -23,15 +23,15 @@ Below is intro of few customizations:
 
 * hideTodayDate:
     Default: false
-    Description: "Hides bottom panel from calender display. Which is used to display today date."
+    Description: "If true, hides bottom panel(containing today's date) from calender display."
 
 * prevYers:
     Default: 5
-    Description: "Sets number of previous years(from current year) to display in year drop-down. NOTE if minDate is defined, this will be ignored in min date's favor."
+    Description: "Sets number of previous years(from current year) to display in year drop-down. NOTE if minDate is defined, this will be ignored in minDate's favor."
 
 * nextYears:
     Default: 5
-    Description: "Sets number of next years(from current year) to display in year drop-down. NOTE if maxDate is defined, this will be ignored in min date's favor"
+    Description: "Sets number of next years(from current year) to display in year drop-down. NOTE if maxDate is defined, this will be ignored in maxDate's favor"
 
 
 #### Requirements
