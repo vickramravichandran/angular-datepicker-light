@@ -54,12 +54,12 @@ div.datepicker-container > div.top-panel {
     }
 
     div.datepicker-container > div.top-panel a.prev {
-        background-image: image-url("angular-datepicker-light/stylesheets/images/chevron-left.png");
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAQCAYAAAAiYZ4HAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAFJJREFUKJHlzbERQEAQQNE3GhDQCTO0fh0IUQkVnOhk5xBIbLj73yzXUyNgLHRnPCFiR383jpjR/DaucofSPPqSQ8tb1H6C1qdoQ1cCCQUMaXEAyUEw5kLhpCcAAAAASUVORK5CYII=);
     }
 
     div.datepicker-container > div.top-panel a.next {
         margin-left: 15px;
-        background-image: image-url("angular-datepicker-light/stylesheets/images/chevron-right.png");
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAQCAYAAAAiYZ4HAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAFBJREFUKJHt0LsNgEAMBNEH1ManKISgNCgKyCA44pOds5KzGWu1lGxYBbPg+S4k9Th/qSK1FamJfIYBV7RSCh4z8JSF7ygMcwbucCgT7hHhBW/dMgUFnWL2AAAAAElFTkSuQmCC);
     }
 
     div.datepicker-container > div.top-panel select {
