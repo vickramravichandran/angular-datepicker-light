@@ -1259,15 +1259,15 @@
         },
         hideTodayDate: {
             def: "false",
-            doc: "Hides bottom panel from calender display. Which is used to display today date."
+            doc: "If true, hides bottom panel(containing today's date) from calender display."
         },
         prevYers: {
             def: "5",
-            doc: "Sets number of previous years(from current year) to display in year drop-down. NOTE if minDate is defined, this will be ignored in min date's favor."
+            doc: "Sets number of previous years(from current year) to display in year drop-down. NOTE if minDate is defined, this will be ignored in minDate's favor."
         },
         nextYears: {
             def: "5",
-            doc: "Sets number of next years(from current year) to display in year drop-down. NOTE if maxDate is defined, this will be ignored in min date's favor"
+            doc: "Sets number of next years(from current year) to display in year drop-down. NOTE if maxDate is defined, this will be ignored in maxDate's favor"
         }
     };
 
