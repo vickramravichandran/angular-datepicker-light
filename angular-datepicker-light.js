@@ -112,6 +112,17 @@
                     });
                 }
 
+                // if a jquery altTarget is specified in options append the container
+                // altTarget supported only for non-inline
+                if (!ctrl.isInline() && angular.isElement(ctrl.options.toggleTarget)) {
+                    // focus the textbox when the alt target(ex: image icon) is clicked
+                    ctrl.options.toggleTarget.on("click focus", function (e) {
+                        scope.$evalAsync(function () {
+                            ctrl.toggleShow();
+                        });
+                    });
+                }
+
                 // prevents text select on mouse drag, dblclick
                 ctrl.container.css("MozUserSelect", "none").bind("selectstart", function () {
                     return false;
@@ -187,6 +198,12 @@
             }
 
             function _documentClick(e) {
+                //prevent closing calender when month or year is selected
+                var target = $(e.target);
+                if(target.is('select') || target.hasClass('option') || target.parent().hasClass('option')) {
+                    return;
+                }
+
                 // hide inactive dropdowns
                 datepickerLightService.hideIfInactive();
 
@@ -526,6 +543,15 @@
             applySelection(that.todayDate);
 
             that.hide();
+        }
+
+        this.toggleShow = function() {
+            if(that.containerVisible){
+                this.hide();
+            }
+            else{
+                this.activate();
+            }
         }
 
 
@@ -1148,6 +1174,7 @@
 
     var defaultOptions = {
         altTarget: null,
+        toggleTarget: null,
         inline: false,
         dateFormat: 'MM/DD/YYYY',
         defaultDate: null,
@@ -1174,6 +1201,10 @@
         altTarget: {
             def: "null",
             doc: "Normally this is the calendar icon jQuery element associated with the datepicker."
+        },
+        toggleTarget: {
+            def: "null",
+            doc: "A JQuery selector, on click of which, calender will toggle display(show/hide)."
         },
         inline: {
             def: "false",
@@ -1281,7 +1312,7 @@
     html_p1 += '            <tr>';
 
     html_ui_select = "";
-    html_ui_select += '                <td style="text-align:left; display: flex;" ng-click="$event.stopPropagation()">';
+    html_ui_select += '                <td style="text-align:left; display: flex;">';
     html_ui_select += '                    <ui-select class="ui-select-month" ng-model="ctrl.selectedMonth" ng-change="ctrl.monthChange(ctrl.selectedMonth)" search-enabled="false" theme="selectize" ng-required>';
     html_ui_select += '                          <ui-select-match> {{$select.selected.name}} </ui-select-match>';
     html_ui_select += '                          <ui-select-choices repeat="item.index as item in ctrl.monthNames">';
@@ -1297,7 +1328,7 @@
 
 
     html_default_select = "";
-    html_default_select += '                <td style="text-align:left" ng-click="$event.stopPropagation()">';
+    html_default_select += '                <td style="text-align:left">';
     html_default_select += '                    <select class="months" ';
     html_default_select += '                            ng-change="ctrl.monthChange(ctrl.selectedMonth)"';
     html_default_select += '                            ng-model="ctrl.selectedMonth"';
