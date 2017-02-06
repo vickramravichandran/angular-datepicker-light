@@ -112,6 +112,17 @@
                     });
                 }
 
+                // if a jquery altTarget is specified in options append the container
+                // altTarget supported only for non-inline
+                if (!ctrl.isInline() && angular.isElement(ctrl.options.toggleTarget)) {
+                    // focus the textbox when the alt target(ex: image icon) is clicked
+                    ctrl.options.toggleTarget.on("click focus", function (e) {
+                        scope.$evalAsync(function () {
+                            ctrl.toggleShow();
+                        });
+                    });
+                }
+
                 // prevents text select on mouse drag, dblclick
                 ctrl.container.css("MozUserSelect", "none").bind("selectstart", function () {
                     return false;
@@ -526,6 +537,15 @@
             applySelection(that.todayDate);
 
             that.hide();
+        }
+
+        this.toggleShow = function() {
+            if(that.containerVisible){
+                this.hide();
+            }
+            else{
+                this.activate();
+            }
         }
 
 
@@ -1148,6 +1168,7 @@
 
     var defaultOptions = {
         altTarget: null,
+        toggleTarget: null,
         inline: false,
         dateFormat: 'MM/DD/YYYY',
         defaultDate: null,
@@ -1174,6 +1195,10 @@
         altTarget: {
             def: "null",
             doc: "Normally this is the calendar icon jQuery element associated with the datepicker."
+        },
+        toggleTarget: {
+            def: "null",
+            doc: "A JQuery selector, on click of which, calender will toggle display(show/hide)."
         },
         inline: {
             def: "false",
