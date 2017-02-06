@@ -2,7 +2,7 @@
 
 `bower install angular-datepicker-light-zz`
 
-### Customizations (v1.2.5)
+### Customizations (v1.2.5+)
 
 This plugin is heavily customized as per my need. But keeping in mind that this remains re-usable. If it's pull request gets accepted i might delete this repo, otherwise this repo/plugin will remain use-full(at-least for us).
 
@@ -32,6 +32,10 @@ Below is intro of main customizations:
 * nextYears:
     Default: 5
     Description: "Sets number of next years(from current year) to display in year drop-down. NOTE if maxDate is defined, this will be ignored in maxDate's favor"
+
+* toggleTarget: (added in 1.2.6)
+    Default: null,
+    Description: "A JQuery selector, on click of which, calender will toggle display(show/hide)."
 
 
 #### Requirements
