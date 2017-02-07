@@ -198,6 +198,12 @@
             }
 
             function _documentClick(e) {
+                //prevent closing calender when month or year is selected
+                var target = $(e.target);
+                if(target.is('select') || target.hasClass('option') || target.parent().hasClass('option')) {
+                    return;
+                }
+
                 // hide inactive dropdowns
                 datepickerLightService.hideIfInactive();
 
@@ -1306,7 +1312,7 @@
     html_p1 += '            <tr>';
 
     html_ui_select = "";
-    html_ui_select += '                <td style="text-align:left; display: flex;" ng-click="$event.stopPropagation()">';
+    html_ui_select += '                <td style="text-align:left; display: flex;">';
     html_ui_select += '                    <ui-select class="ui-select-month" ng-model="ctrl.selectedMonth" ng-change="ctrl.monthChange(ctrl.selectedMonth)" search-enabled="false" theme="selectize" ng-required>';
     html_ui_select += '                          <ui-select-match> {{$select.selected.name}} </ui-select-match>';
     html_ui_select += '                          <ui-select-choices repeat="item.index as item in ctrl.monthNames">';
@@ -1322,7 +1328,7 @@
 
 
     html_default_select = "";
-    html_default_select += '                <td style="text-align:left" ng-click="$event.stopPropagation()">';
+    html_default_select += '                <td style="text-align:left">';
     html_default_select += '                    <select class="months" ';
     html_default_select += '                            ng-change="ctrl.monthChange(ctrl.selectedMonth)"';
     html_default_select += '                            ng-model="ctrl.selectedMonth"';
