@@ -42,6 +42,7 @@ Below is intro of main customizations:
 
 * Angular v1.5.3+
 * Moment v2.12.0+
+* JQuery v1.6+
 
 <b>Demo(Of original gem):</b> http://vickramravichandran.github.io/angular-datepicker-light/
 
