@@ -8,6 +8,7 @@
 
 * Angular v1.5.3+
 * Moment v2.12.0+
+* JQuery v1.6+
 
 <b>Demo:</b> http://vickramravichandran.github.io/angular-datepicker-light/
 
