@@ -63,200 +63,189 @@
             // execute the options expression in the parent scope
             var options = ctrl.options() || {
             };
-            ctrl.init(angular.extend({
-            }, defaultOptions, options));
 
-            // store the jquery element on the controller
-            ctrl.target = element;
+            //wait for page load before initialization to avoid any missing selectors and other related issues.
+            $timeout(function () {
 
-            if(ctrl.isUiSelectEnabled())
-                initContainer(html_uiselect);
-            else
-                initContainer(html);
-
-            function initContainer(template) {
-                var templateFn = $compile(template);
-                ctrl.container = templateFn(scope);
-
-                if (angular.isDefined(ctrl.options.containerCssClass && ctrl.options.containerCssClass !== null)) {
-                    ctrl.container.addClass(ctrl.options.containerCssClass);
+                //load elements if string is provided as selector, to include updated references after page load
+                if(typeof(options.toggleTarget) == "string"){
+                    options.toggleTarget = angular.element(options.toggleTarget);
+                }
+                if(typeof(options.altTarget) == "string"){
+                    options.altTarget = angular.element(options.altTarget);
                 }
 
-                // if a jquery parent is specified in options append the container
-                if (angular.isElement(ctrl.options.inline)) {
-                    ctrl.options.inline.append(ctrl.container);
+                ctrl.init(angular.extend({
+                }, defaultOptions, options));
 
-                    // else append container after the textbox
-                } else {
-                    element.after(ctrl.container);
-                }
+                // store the jquery element on the controller
+                ctrl.target = element;
 
-                // if container is not inline, than make its position absolute
-                if (!ctrl.isInline()) {
-                    ctrl.container.addClass("datepicker-absolute-container");
-                }
+                if(ctrl.isUiSelectEnabled())
+                    initContainer(html_uiselect);
+                else
+                    initContainer(html);
 
-                if(ctrl.hideTodayDateEnabled()) {
-                    angular.element(".bottom-panel").addClass("hide-container")
-                }
+                function initContainer(template) {
+                    var templateFn = $compile(template);
+                    ctrl.container = templateFn(scope);
 
-
-                // if a jquery altTarget is specified in options append the container
-                // altTarget supported only for non-inline
-                if (!ctrl.isInline() && angular.isElement(ctrl.options.altTarget)) {
-                    // focus the textbox when the alt target(ex: image icon) is clicked
-                    ctrl.options.altTarget.on("click focus", function (e) {
-                        scope.$evalAsync(function () {
-                            ctrl.activate();
-                        });
-                    });
-                }
-
-                // if a jquery altTarget is specified in options append the container
-                // altTarget supported only for non-inline
-                if (!ctrl.isInline() && angular.isElement(ctrl.options.toggleTarget)) {
-                    // focus the textbox when the alt target(ex: image icon) is clicked
-                    ctrl.options.toggleTarget.on("click focus", function (e) {
-                        scope.$evalAsync(function () {
-                            ctrl.toggleShow();
-                        });
-                    });
-                }
-
-                // prevents text select on mouse drag, dblclick
-                ctrl.container.css("MozUserSelect", "none").bind("selectstart", function () {
-                    return false;
-                });
-            }
-
-            $document.ready(function(){
-                // activate all inline date pickers and call ready callback
-                scope.$evalAsync(function () {
-                    if (ctrl.isInline()) {
-                        ctrl.activate();
+                    if (angular.isDefined(ctrl.options.containerCssClass && ctrl.options.containerCssClass !== null)) {
+                        ctrl.container.addClass(ctrl.options.containerCssClass);
                     }
 
-                    ctrl.ready();
-                });
-            })
+                    // if a jquery parent is specified in options append the container
+                    if (angular.isElement(ctrl.options.inline)) {
+                        ctrl.options.inline.append(ctrl.container);
 
-            // when the target(textbox) gets focus activate the corresponding container
-            element.on("click focus", function (e) {
-                scope.$evalAsync(function () {
-                    ctrl.activate();
-                });
-            });
+                        // else append container after the textbox
+                    } else {
+                        element.after(ctrl.container);
+                    }
 
-            // when the target(textbox) changes
-            element.on("keydown", function (e) {
-                scope.$evalAsync(function () {
-                    var term = element.val();
-                    if (term.length === 0 || term === ctrl.targetText) {
+                    // if container is not inline, than make its position absolute
+                    if (!ctrl.isInline()) {
+                        ctrl.container.addClass("datepicker-absolute-container");
+                    }
+
+                    if(ctrl.hideTodayDateEnabled()) {
+                        angular.element(".bottom-panel").addClass("hide-container")
+                    }
+
+
+                    // if altTarget is specified in options append the container
+                    // altTarget supported only for non-inline
+                    if (!ctrl.isInline() && angular.isElement(ctrl.options.altTarget)) {
+                        // focus the textbox when the alt target(ex: image icon) is clicked
+                        ctrl.options.altTarget.on("click focus", function (e) {
+                            scope.$evalAsync(function () {
+                                //If clicked element is inside specified altTarget, but it also happens to be toggleTarget, than ignore altTarget operation on its click while toggleTarget operation is performed on it.
+                                //TODO: Remove JQuery dependency, i.e convert JQUery's is methods to pure JS/jqlite or angular versions
+                                if($(e.target).is($(ctrl.options.toggleTarget)) ) {
+                                    return;
+                                }
+                                ctrl.activate();
+                            });
+                        });
+                    }
+
+                    // if altTarget is specified in options append the container
+                    // altTarget supported only for non-inline
+                    if (!ctrl.isInline() && angular.isElement(ctrl.options.toggleTarget)) {
+                        // focus the textbox when the alt target(ex: image icon) is clicked
+                        ctrl.options.toggleTarget.on("click focus", function (e) {
+                            scope.$evalAsync(function () {
+                                ctrl.toggleShow();
+                            });
+                        });
+                    }
+
+                    // prevents text select on mouse drag, dblclick
+                    ctrl.container.css("MozUserSelect", "none").bind("selectstart", function () {
+                        return false;
+                    });
+                }
+
+                $document.ready(function(){
+                    // activate all inline date pickers and call ready callback
+                    scope.$evalAsync(function () {
+                        if (ctrl.isInline()) {
+                            ctrl.activate();
+                        }
+
+                        ctrl.ready();
+                    });
+                })
+
+                // when the target(textbox) gets focus activate the corresponding container
+                element.on("click focus", function (e) {
+                    scope.$evalAsync(function () {
+                        ctrl.activate();
+                    });
+                });
+
+                // when the target(textbox) changes
+                element.on("keydown", function (e) {
+                    scope.$evalAsync(function () {
+                        var term = element.val();
+                        if (term.length === 0 || term === ctrl.targetText) {
+                            return;
+                        }
+
+                        // wait few millisecs before trying to parse
+                        // this allows checking if user has stopped typing
+                        var delay = $timeout(function () {
+                            // is term unchanged?
+                            if (term == element.val()) {
+                                ctrl.tryApplyDateFromTarget();
+                            }
+
+                            //cancel the timeout
+                            $timeout.cancel(delay);
+                        }, 300);
+                    });
+                });
+
+                angular.element($window).on("resize", function (e) {
+                    scope.$evalAsync(function () {
+                        ctrl.hide();
+                    });
+                })
+
+                // hide container upon CLICK outside of the dropdown rectangle region
+                $document.on("click", function (e) {
+                    scope.$evalAsync(function () {
+                        _documentClick(e);
+                    });
+                });
+
+                // cleanup on destroy
+                var destroyFn = scope.$on('$destroy', function () {
+                    if (ctrl.container) {
+                        ctrl.container.remove();
+                        ctrl.container = null;
+                    }
+
+                    destroyFn()
+                });
+
+                function _documentKeyDown(e) {
+                    // hide inactive instances
+                    datepickerLightService.hideIfInactive();
+                }
+
+                function _documentClick(e) {
+
+                    //ignore if target which was clicked is inside container
+                    var target = $(e.target);
+                    //TODO: better detection of clicks on ui-select drop-downs, instead of mare checking of option class
+                    //TODO: Remove JQuery dependency, i.e convert JQUery's has and is methods to pure JS/jqlite or angular versions
+                    if(ctrl.container && $(ctrl.container[0]).has(target).length > 0 || target.hasClass('option') || target.parent().hasClass('option') ) {
                         return;
                     }
 
-                    // wait few millisecs before trying to parse
-                    // this allows checking if user has stopped typing
-                    var delay = $timeout(function () {
-                        // is term unchanged?
-                        if (term == element.val()) {
-                            ctrl.tryApplyDateFromTarget();
-                        }
+                    //ignore if toggleTarget or binded input field is clicked
+                    if(ctrl.options.toggleTarget && $(ctrl.options.toggleTarget).has(target).length > 0 || target.is($(ctrl.target)) ){
+                        return;
+                    }
 
-                        //cancel the timeout
-                        $timeout.cancel(delay);
-                    }, 300);
-                });
-            });
+                    // hide inactive dropdowns
+                    datepickerLightService.hideIfInactive();
 
-            angular.element($window).on("resize", function (e) {
-                scope.$evalAsync(function () {
+                    // we care about the active non-inline one only
+                    if (ctrl.instanceId !== ctrl.activeInstanceId() || ctrl.isInline()) {
+                        return;
+                    }
+
+                    // no container. probably destroyed in scope $destroy
+                    if (!ctrl.container) {
+                        return;
+                    }
+
+                    //if no above condition was true, than it means click was outside the container and calender should get hide
                     ctrl.hide();
-                });
-            })
-
-            // hide container upon CLICK outside of the dropdown rectangle region
-            $document.on("click", function (e) {
-                scope.$evalAsync(function () {
-                    _documentClick(e);
-                });
+                }
             });
-
-            // cleanup on destroy
-            var destroyFn = scope.$on('$destroy', function () {
-                if (ctrl.container) {
-                    ctrl.container.remove();
-                    ctrl.container = null;
-                }
-
-                destroyFn()
-            });
-
-            function _documentKeyDown(e) {
-                // hide inactive instances
-                datepickerLightService.hideIfInactive();
-            }
-
-            function _documentClick(e) {
-                //prevent closing calender when month or year is selected
-                var target = $(e.target);
-                if(target.is('select') || target.hasClass('option') || target.parent().hasClass('option')) {
-                    return;
-                }
-
-                // hide inactive dropdowns
-                datepickerLightService.hideIfInactive();
-
-                // we care about the active non-inline one only
-                if (ctrl.instanceId !== ctrl.activeInstanceId() || ctrl.isInline()) {
-                    return;
-                }
-
-                // no container. probably destroyed in scope $destroy
-                if (!ctrl.container) {
-                    return;
-                }
-
-                // hide the active calendar if user clicks anywhere away from the dropdown list
-                var offset = ctrl.container[0].getBoundingClientRect();
-                var isMouseAwayFromActiveContainer = false;
-                var awayTolerance = ctrl.options.datepickerClickMargin;
-
-                //check if mouse is over the container
-                if (e.pageX < offset.left - awayTolerance
-                    || e.pageX > offset.left + offset.width + awayTolerance
-                    || e.pageY < offset.top - awayTolerance
-                    || e.pageY > offset.top + offset.height + awayTolerance) {
-
-                    isMouseAwayFromActiveContainer = true;
-
-                    //check if mouse is over the target (textbox)
-                    offset = ctrl.target[0].getBoundingClientRect();
-                    if (e.pageX >= offset.left
-                        && e.pageX <= offset.left + offset.width
-                        && e.pageY >= offset.top
-                        && e.pageY <= offset.top + offset.height) {
-
-                        isMouseAwayFromActiveContainer = false;
-                    }
-
-                    //check if mouse is over the alt target (ex:image icon)
-                    if (angular.isElement(ctrl.options.altTarget)) {
-                        offset = ctrl.options.altTarget[0].getBoundingClientRect();
-                        if (e.pageX >= offset.left
-                            && e.pageX <= offset.left + offset.width
-                            && e.pageY >= offset.top
-                            && e.pageY <= offset.top + offset.height) {
-
-                            isMouseAwayFromActiveContainer = false;
-                        }
-                    }
-
-                    if (isMouseAwayFromActiveContainer === true) {
-                        ctrl.hide();
-                    }
-                }
-            }
         }
     }
 
@@ -423,7 +412,8 @@
             var targetValue = jQueryTargetValue();
 
             if (targetValue === null || targetValue.length === 0 || parseDate(targetValue) === null) {
-                if (!isUndefinedOrNull(that.selectedData)) {
+                //if date in model is not valid and setCurrentDateWhenEmpty is true, set current date to model
+                if (!isUndefinedOrNull(that.selectedData) && that.options.setCurrentDateWhenEmpty) {
                     updateTargetModel(formatDate(that.selectedData.date));
                 }
             }
@@ -1178,6 +1168,7 @@
         inline: false,
         dateFormat: 'MM/DD/YYYY',
         defaultDate: null,
+        setCurrentDateWhenEmpty: false,
         minDate: null,
         maxDate: null,
         firstDayOfWeek: 0,
@@ -1200,11 +1191,11 @@
     var defaultOptionsDoc = {
         altTarget: {
             def: "null",
-            doc: "Normally this is the calendar icon jQuery element associated with the datepicker."
+            doc: "Normally this is the calendar icon jQuery element associated with the datepicker. (If this is passed as a string selector(e.g: '#id'), will be evaluated after page load.)"
         },
         toggleTarget: {
             def: "null",
-            doc: "A JQuery selector, on click of which, calender will toggle display(show/hide)."
+            doc: "A JQuery selector, on click of which, calender will toggle display(show/hide). (If this is passed as a string selector(e.g: '#id'), will be evaluated after page load.)"
         },
         inline: {
             def: "false",
@@ -1290,7 +1281,7 @@
         },
         hideTodayDate: {
             def: "false",
-            doc: "If true, hides bottom panel(containing today's date) from calender display."
+            doc: "Hides bottom panel from calender display. Which is used to display today date."
         },
         prevYers: {
             def: "5",
@@ -1299,6 +1290,10 @@
         nextYears: {
             def: "5",
             doc: "Sets number of next years(from current year) to display in year drop-down. NOTE if maxDate is defined, this will be ignored in maxDate's favor"
+        },
+        setCurrentDateWhenEmpty: {
+            def: "false",
+            doc: "Specifies if current date should be set in input field, when calender opens and model is empty."
         }
     };
 

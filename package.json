@@ -26,6 +26,7 @@
     "gulp-uglify": "^1.5.3"
   },
   "dependencies": {
+    "jquery": ">1.6",
     "angular": "^1.5.3",
     "moment": "^2.12.0"
   }
