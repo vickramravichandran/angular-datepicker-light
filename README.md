@@ -18,31 +18,35 @@ Below is intro of main customizations:
 ### Additional options details:
 
 * useAngularUiSelect:
-    Default: false
-    Description: "Specifies if ui-select should be used for drop-downs. Note that we assume if this is true, than ui-select is already included in project."
+    **Default:** false
+    **Description:** "Specifies if ui-select should be used for drop-downs. Note that we assume if this is true, than ui-select is already included in project."
 
 * hideTodayDate:
-    Default: false
-    Description: "If true, hides bottom panel(containing today's date) from calender display."
+    **Default:** false
+    **Description:** "If true, hides bottom panel(containing today's date) from calender display."
 
 * prevYers:
-    Default: 5
-    Description: "Sets number of previous years(from current year) to display in year drop-down. NOTE if minDate is defined, this will be ignored in minDate's favor."
+    **Default:** 5
+    **Description:** "Sets number of previous years(from current year) to display in year drop-down. NOTE if minDate is defined, this will be ignored in minDate's favor."
 
 * nextYears:
-    Default: 5
-    Description: "Sets number of next years(from current year) to display in year drop-down. NOTE if maxDate is defined, this will be ignored in maxDate's favor"
+    **Default:** 5
+    **Description:** "Sets number of next years(from current year) to display in year drop-down. NOTE if maxDate is defined, this will be ignored in maxDate's favor"
 
 * toggleTarget: (added in 1.2.6)
-    Default: null,
-    Description: "A JQuery selector, on click of which, calender will toggle display(show/hide)."
+    **Default:** null,
+    **Description:** "A JQuery selector, on click of which, calender will toggle display(show/hide)."
+
+* setCurrentDateWhenEmpty: (added in 1.2.7)
+    **Default:** false
+    **Description:** "Specifies if current date should be set in input field, when calender opens and model is empty."
 
 
 #### Requirements
 
 * Angular v1.5.3+
 * Moment v2.12.0+
-* JQuery v1.6+
+* JQuery v1.6+ (Dependency added in v1.2.7, will be great if someone can remove this dependency)
 
 <b>Demo(Of original gem):</b> http://vickramravichandran.github.io/angular-datepicker-light/
 
