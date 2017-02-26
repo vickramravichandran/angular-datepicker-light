@@ -1,0 +1,44 @@
+<div class="scenario">
+    <div ng-controller="InlineCtrl as vm">
+        <h3>Example 2: Inline</h3>
+        <div>
+            <input type="text"
+                    ng-model="vm.date"
+                    class="form-control"
+                    angular-datepicker-light="vm.datepickerOptions" />
+        </div>
+    </div>
+
+    <div class="code-container">
+        <h6>HTML</h6>
+        <div>
+<pre><code class="language-markup">&lt;body ng-app="mainApp">
+    &lt;div ng-controller="InlineCtrl as vm">
+        &lt;input type="text"
+               ng-model="vm.date"   
+               angular-datepicker-light="vm.datepickerOptions" />
+    &lt;/div>
+&lt;/body>
+</code></pre>
+        </div>
+        
+        <div>
+            <h6>JavaScript</h6>
+<pre><code class="language-javascript">angular
+    .module('mainApp', ['datepickerLightModule'])
+    .controller('InlineCtrl', InlineCtrl)
+        
+    function InlineCtrl(){
+        var vm = this;
+        
+        vm.date = "07/01/2016";
+        vm.datepickerOptions = {
+            inline: true
+        };
+    }
+</code></pre>
+        </div>
+
+    </div>
+
+</div>

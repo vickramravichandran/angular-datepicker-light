@@ -1,0 +1,90 @@
+html {
+	font-size: initial;
+}
+
+h1.post-title {
+	font-size: 2.7em;
+	font-weight: bold;
+}
+
+/*
+.content pre[class*="language-"] {
+	max-height: initial;
+}
+*/
+
+div.code-container {
+	margin-top: 20px;
+}
+
+	div.code-container h6 {
+		margin-top: 10px;
+	}
+
+div.scenario {
+	margin-bottom: 30px;
+}
+
+	div.scenario input[type=text] {
+		display: inline-block;
+		width: 110px;
+		font-weight: bold;
+		/*        background-color: white;*/
+		background-color: rgb(255, 248, 182);
+	}
+
+div.scenario h3 {
+	margin-top: 20px;
+}
+
+div.config-options {
+	margin-top:20px;
+}
+
+div.config-options div.default {
+	margin-top: 10px;
+	font-style: italic;
+}
+
+div.config-options > ul {
+	padding: 0px;
+}
+
+div.config-options > ul > li {
+	padding: 8px;
+	list-style: none;
+	border-top: 1px solid #dddddd;
+	padding-bottom: 20px;
+}
+
+div.config-options > ul > li:nth-child(odd) {
+	background-color: #f6f6f6;
+}
+
+div.config-options > ul > li a {
+	color: blue;
+}
+
+div.datepicker-container-inline {
+	margin-top: 5px;
+}
+
+div.date-target {
+	width: 320px;
+	font-size: 18px;
+	font-weight: bold;
+	padding: 10px 10px 10px 10px;
+	text-align: center;
+	color: #191717;
+	background-color: rgb(255, 248, 182);
+}
+
+#calendarIcon {
+	margin-left: 5px;
+	display: inline-block;
+	width: 24px;
+	height: 24px;
+	background-repeat: no-repeat;
+	background-position: top left;
+	background-image: url(images/calendar.png);
+}

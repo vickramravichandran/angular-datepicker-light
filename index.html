@@ -14,28 +14,28 @@
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,700,500,400italic' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300,700' rel='stylesheet' type='text/css'>
 
-    <link rel="stylesheet" href="stylesheets/normalize.css">
-    <link rel="stylesheet" href="stylesheets/bootstrap.css" />
+    <link rel="stylesheet" href="assets/normalize.css">
+    <link rel="stylesheet" href="assets/bootstrap.css" />
 
-    <link rel="stylesheet" href="stylesheets/main.css">
-    <link rel="stylesheet" href="stylesheets/prism-okaidia.css">
-    <link rel="stylesheet" href="stylesheets/angular-datepicker-light.css" />
-    <link rel="stylesheet" href="stylesheets/styles.css" />
+    <link rel="stylesheet" href="assets/main.css">
+    <link rel="stylesheet" href="assets/prism-okaidia.css">
+    <link rel="stylesheet" href="assets/angular-datepicker-light.css" />
+    <link rel="stylesheet" href="assets/app.css" />
 
-    <script type="text/javascript" src="javascripts/jquery.js"></script>
+    <script type="text/javascript" src="scripts/jquery.js"></script>
 
-    <script type="text/javascript" src="javascripts/prism.js"></script>
+    <script type="text/javascript" src="scripts/prism-okaidia.js"></script>
 
-    <script type="text/javascript" src="javascripts/angular.js"></script>
-    <script type="text/javascript" src="javascripts/angular-sanitize.js"></script>
-    <script type="text/javascript" src="javascripts/moment.js"></script>
-    <script type="text/javascript" src="javascripts/angular-datepicker-light.js"></script>
-    <script type="text/javascript" src="javascripts/scripts.js"></script>
+    <script type="text/javascript" src="scripts/angular.js"></script>
+    <script type="text/javascript" src="scripts/angular-sanitize.js"></script>
+    <script type="text/javascript" src="scripts/moment.js"></script>
+    <script type="text/javascript" src="scripts/angular-datepicker-light.js"></script>
+    <script type="text/javascript" src="scripts/app.js"></script>
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 </head>
-<body ng-app="mainApp">
+<body ng-app="mainApp" ng-controller="MainCtrl as ctrl">
     <div class="sidebar">
         <header class="header" role="banner">
             <a href="http://www.vickram.me/"><img id="blog" class="logo" src="images/VS2015-180.png"></a>
@@ -62,6 +62,7 @@
             </div>
         </header>
     </div>
+
     <div class="content">
         <main role="main">
             <article class="post" role="article" itemscope="" itemtype="http://schema.org/Article">
@@ -75,292 +76,40 @@
 
                 <div class="container-fluid">
 
-                    <div class="row">
-                        <div class="scenario">
-                            <div ng-controller="OnFocusCtrl as vm">
-                                <h3 class="config-title">Example 1: Show on Focus</h3>
-                                <div>
-                                    <input type="text"
-                                           ng-model="vm.date"
-                                           class="form-control"
-                                           angular-datepicker-light="vm.datepickerOptions" />
-                                    <span id="calendarIcon"></span>
-                                </div>
-                            </div>
-                            <div class="code-container">
-                                <h6>HTML</h6>
-                                <div>
-<pre><code class="language-markup">&lt;body ng-app="mainApp">
-    &lt;div ng-controller="OnFocusCtrl as vm">
-        &lt;input type="text" 
-               ng-model="vm.date"
-               angular-datepicker-light="vm.datepickerOptions" />
-        &lt;span id="calendarIcon"&gt;&lt;/span>
-    &lt;/div>
-&lt;/body>
-</code></pre>
-                                </div>
-                                <div>
-                                    <h6>JavaScript</h6>
-<pre><code class="language-javascript">angular
-    .module('mainApp', ['datepickerLightModule'])
-    .controller('OnFocusCtrl', function () {
-        var vm = this;
-        
-        vm.date = "07/01/2016";
-        vm.datepickerOptions = {
-            altTarget: $("#calendarIcon")
-        };
-    });
-</code></pre>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="row" ng-include="'partials/on-focus.tpl.html'" onload="ctrl.prism()"></div>
 
-                    <div class="row">
-                        <div class="scenario">
-                            <div ng-controller="InlineCtrl as vm">
-                                <h3 class="config-title">Example 2: Show Inline</h3>
-                                <div>
-                                    <input type="text"
-                                           ng-model="vm.date"
-                                           class="form-control"
-                                           angular-datepicker-light="vm.datepickerOptions" />
-                                </div>
-                            </div>
-                            <div class="code-container">
-                                <h6>HTML</h6>
-                                <div>
-<pre><code class="language-markup">&lt;body ng-app="mainApp">
-    &lt;div ng-controller="InlineCtrl as vm">
-        &lt;input type="text"
-               ng-model="vm.date"   
-               angular-datepicker-light="vm.datepickerOptions" />
-    &lt;/div>
-&lt;/body>
-</code></pre>
-                                </div>
-                                <div>
-                                    <h6>JavaScript</h6>
-<pre><code class="language-javascript">angular
-    .module('mainApp', ['datepickerLightModule'])
-    .controller('InlineCtrl', InlineCtrl)
-        
-    function InlineCtrl(){
-        var vm = this;
-        
-        vm.date = "07/01/2016";
-        vm.datepickerOptions = {
-            inline: true
-        };
-    }
-</code></pre>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="row" ng-include="'partials/inline.tpl.html'" onload="ctrl.prism()"></div>
+                    
+                    <div class="row" ng-include="'partials/inline-disabled-dates.tpl.html'" onload="ctrl.prism()"></div>
+                    
+                    <div class="row" ng-include="'partials/inline-other-month-dates.tpl.html'" onload="ctrl.prism()"></div>
 
-                    <div class="row">
-                        <div class="scenario">
-                            <div ng-controller="InlineDisabledDatesCtrl as vm">
-                                <h3 class="config-title">Example 4: Disabled Dates</h3>
-                                <div>
-                                    <input type="text"
-                                           ng-model="vm.date"
-                                           class="form-control"
-                                           angular-datepicker-light="vm.datepickerOptions" />
-                                </div>
-                            </div>
-                            <div class="code-container">
-                                <h6>HTML</h6>
-                                <div>
-<pre><code class="language-markup">&lt;body ng-app="mainApp">
-    &lt;div ng-controller="InlineDisabledDatesCtrl as vm">
-        &lt;input type="text"
-               ng-model="vm.date"   
-               angular-datepicker-light="vm.datepickerOptions" />
-    &lt;/div>
-&lt;/body>
-</code></pre>
-                                </div>
-                                <div>
-                                    <h6>JavaScript</h6>
-<pre><code class="language-javascript">angular
-    .module('mainApp', ['datepickerLightModule'])
-    .controller('InlineDisabledDatesCtrl', InlineDisabledDatesCtrl);
-    
-    function InlineDisabledDatesCtrl() {
-        var vm = this;        
+                    <div class="row" ng-include="'partials/inline-custom-week-start.tpl.html'" onload="ctrl.prism()"></div>
 
-        vm.date = "07/01/2016";
-        vm.datepickerOptions = {
-            inline: true,
-            renderDate: function (e) {
-                return {
-                    enabled: e.date.getDate() > 10
-                }
-            }
-        };
-    }
-</code></pre>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="scenario">
-                            <div ng-controller="InlineOtherMonthDatesCtrl as vm">
-                                <h3 class="config-title">Example 3: Dates in Other Months</h3>
-                                <div>
-                                    <input type="text"
-                                           ng-model="vm.date"
-                                           class="form-control"
-                                           angular-datepicker-light="vm.datepickerOptions" />
-                                </div>
-                            </div>
-                            <div class="code-container">
-                                <h6>HTML</h6>
-                                <div>
-<pre><code class="language-markup">&lt;body ng-app="mainApp">
-    &lt;div ng-controller="InlineOtherMonthDatesCtrl as vm">
-        &lt;input type="text"
-               ng-model="vm.date"   
-               angular-datepicker-light="vm.datepickerOptions" />
-    &lt;/div>
-&lt;/body>
-</code></pre>
-                                </div>
-                                <div>
-                                    <h6>JavaScript</h6>
-<pre><code class="language-javascript">angular
-    .module('mainApp', ['datepickerLightModule'])
-    .controller('InlineOtherMonthDatesCtrl', InlineOtherMonthDatesCtrl);
-    
-    function InlineOtherMonthDatesCtrl() {
-        var vm = this;
-        
-        vm.date = "07/01/2016";        
-        vm.datepickerOptions = {
-            inline: true,
-            showOtherMonthDates: true
-        };        
-    }
-</code></pre>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="scenario">
-                            <div ng-controller="InlineCustomWeekStartCtrl as vm">
-                                <h3 class="config-title">Example 5: Custom Week Start</h3>
-                                <div>
-                                    <input type="text"
-                                           ng-model="vm.date"
-                                           class="form-control"
-                                           angular-datepicker-light="vm.datepickerOptions" />
-                                </div>
-                            </div>
-                            <div class="code-container">
-                                <h6>HTML</h6>
-                                <div>
-<pre><code class="language-markup">&lt;body ng-app="mainApp">
-    &lt;div ng-controller="InlineCustomWeekStartCtrl as vm">
-        &lt;input type="text"
-               ng-model="vm.date"   
-               angular-datepicker-light="vm.datepickerOptions" />
-    &lt;/div>
-&lt;/body>
-</code></pre>
-                                </div>
-                                <div>
-                                    <h6>JavaScript</h6>
-<pre><code class="language-javascript">angular
-    .module('mainApp', ['datepickerLightModule'])
-    .controller('InlineCustomWeekStartCtrl', InlineCustomWeekStartCtrl);
-    
-    function InlineCustomWeekStartCtrl() {
-        var vm = this;
-        
-        vm.date = "07/01/2016";
-        vm.datepickerOptions = {
-            inline: true,
-            firstDayOfWeek: 1
-        };
-    }
-</code></pre>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="scenario">
-                            <div ng-controller="InlineDivTargetCtrl as vm">
-                                <h3 class="config-title">Example 6: &lt;div&gt; Target</h3>
-                                <div class="date-target" angular-datepicker-light="vm.datepickerOptions">
-                                    {{vm.date | date:'MM / dd / yyyy'}}
-                                </div>
-                            </div>
-                            <div class="code-container">
-                                <h6>HTML</h6>
-                                <div>
-<pre><code class="language-markup" ng-non-bindable>&lt;body ng-app="mainApp">
-    &lt;div ng-controller="InlineDivTargetCtrl as vm">
-        &lt;div class="date-target" angular-datepicker-light="vm.datepickerOptions">
-            {{vm.date | date:'MM / dd / yyyy'}}
-        &lt;/div>
-    &lt;/div>
-&lt;/body>
-</code></pre>
-                                </div>
-                                <div>
-                                    <h6>JavaScript</h6>
-<pre><code class="language-javascript">angular
-    .module('mainApp', ['datepickerLightModule'])
-    .controller('InlineDivTargetCtrl', InlineDivTargetCtrl);
-    
-    function InlineDivTargetCtrl() {
-        var vm = this;
-        
-        vm.date = "07/01/2016";
-        vm.datepickerOptions = {
-            inline: true 
-        };
-
-</code></pre>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="row" ng-include="'partials/inline-div-target.tpl.html'" onload="ctrl.prism()"></div>
 
                 </div>
 
-                <div style="margin-top:20px;" ng-controller="PluginOptionsCtrl as vm">
+                <div class="config-options" ng-controller="PluginOptionsCtrl as vm">
                     <h2 id="options">Options</h2>
-                    <table class="table documentation">
-                        <tbody>
-                            <tr ng-repeat="(key, val) in vm.options">
-                                <th>{{key}}</th>
-                                <td>
-                                    <i>Default: {{val.def}}</i>
-                                    <div ng-bind-html="val.doc"></div>
-                                    <div ng-if="val.docArray">
-                                        <ul>
-                                            <li ng-repeat="docar in val.docArray">
-                                                <span ng-repeat="(key, val) in docar">
-                                                    <b>{{key}}:</b> {{val}}
-                                                </span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <ul class="options">
+                        <li ng-repeat="(key, val) in vm.options">
+                            <h5>{{key}}</h5>
+                            <p ng-bind-html="val.doc"></p>
+                            <div ng-if="val.docArray">
+                                <ul>
+                                    <li ng-repeat="arr in val.docArray">
+                                        <span ng-repeat="(key, val) in arr">
+                                            <b>{{key}}:</b> {{val}}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="default">
+                                Default: {{val.def}}
+                            </div>
+                        </li>
+                    </ul>
                 </div>
 
             </article>

@@ -1,0 +1,41 @@
+<div class="scenario">
+    <div ng-controller="InlineDivTargetCtrl as vm">
+        <h3>Example 6: &lt;div&gt; Target</h3>
+        <div class="date-target"
+                angular-datepicker-light="vm.datepickerOptions">
+        </div>
+    </div>
+
+    <div class="code-container">
+        <h6>HTML</h6>
+        <div>
+<pre><code class="language-markup">&lt;body ng-app="mainApp">
+    &lt;div ng-controller="InlineDivTargetCtrl as vm">
+        &lt;div class="date-target" 
+             angular-datepicker-light="vm.datepickerOptions">
+        &lt;/div>
+    &lt;/div>
+&lt;/body>
+</code></pre>
+        </div>
+        
+        <div>
+            <h6>JavaScript</h6>
+<pre><code class="language-javascript">angular
+    .module('mainApp', ['datepickerLightModule'])
+    .controller('InlineDivTargetCtrl', InlineDivTargetCtrl);
+    
+    function InlineDivTargetCtrl() {
+        var vm = this;
+        
+        vm.datepickerOptions = {
+            inline: true,
+            dateFormat: 'MMM Do YYYY',
+            containerCssClass: "datepicker-container-inline"
+        };
+
+</code></pre>
+        </div>
+    </div>
+
+</div>
