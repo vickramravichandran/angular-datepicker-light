@@ -1,0 +1,141 @@
+div.datepicker-container {
+    width: 320px;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    border: solid 2px #867F7F;
+    background-color: White;
+    white-space: nowrap;
+    padding: 2px;
+    
+    /*prevent text select*/
+    user-select: none;
+    -o-user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+}
+
+div.datepicker-absolute-container {
+    position: absolute;
+    z-index: 10000;
+}
+
+div.datepicker-container > div.top-panel {
+    text-align: center;
+    padding: 10px 8px;
+}
+
+    div.datepicker-container > div.top-panel > table.calendar {
+        width: 100%;
+        white-space: nowrap;
+        margin: 0px;
+    }
+
+        div.datepicker-container > div.top-panel > table.calendar > tbody > tr > td {
+            background-color: transparent;
+            border: 0px;
+            padding: 0px;
+        }
+
+    div.datepicker-container > div.top-panel a.prev,
+    div.datepicker-container > div.top-panel a.next {
+        display: inline-block;
+        text-decoration: none;
+        width: 12px;
+        height: 16px;
+        background-repeat: no-repeat;
+        background-position: top left;
+    }
+
+    div.datepicker-container > div.top-panel a.prev {
+        background-image: url(images/chevron-left.png);
+    }
+
+    div.datepicker-container > div.top-panel a.next {
+        margin-left: 15px;
+        background-image: url(images/chevron-right.png);
+    }
+
+    div.datepicker-container > div.top-panel select {
+        border: 1px solid #CCCCCC;
+        font-size: 15px;
+    }
+
+        div.datepicker-container > div.top-panel select.years {
+            margin-left: 5px;
+        }
+
+div.datepicker-container > div.middle-panel > table.calendar {
+    width: 100%;
+    margin: 0px;
+    border-collapse: collapse;
+}
+
+    div.datepicker-container > div.middle-panel > table.calendar > thead > tr > th {
+        border: solid 1px #CCCCCC;
+        border-color: #CCCCCC transparent;
+        background-color: transparent;
+        padding: 8px;
+        color: Black;
+        text-align: center;
+    }
+
+    div.datepicker-container > div.middle-panel > table.calendar > tbody > tr > td {
+        background-color: transparent;
+        padding: 0px;
+    }
+
+    div.datepicker-container > div.middle-panel > table.calendar > tbody > tr.week-row > td,
+    div.datepicker-container > div.middle-panel > table.calendar > tbody > tr.week-row-placeholder > td {
+        text-align: center;
+        border: solid 1px transparent;
+        background-color: transparent;
+        padding: 2px;
+    }
+
+        div.datepicker-container > div.middle-panel > table.calendar > tbody > tr.week-row > td.date-visible {
+            cursor: pointer;
+        }
+
+            div.datepicker-container > div.middle-panel > table.calendar > tbody > tr.week-row > td.date-visible:hover,
+            div.datepicker-container > div.middle-panel > table.calendar > tbody > tr.week-row > td.date-selected {
+                color: white;
+                background-color: red;
+            }
+
+            div.datepicker-container > div.middle-panel > table.calendar > tbody > tr.week-row > td.date-visible.date-other-month {
+                background-color: transparent;
+                color: darkgray;
+            }
+
+                div.datepicker-container > div.middle-panel > table.calendar > tbody > tr.week-row > td.date-visible.date-other-month:not(.date-disabled):hover {
+                    background-color: #EBEBEB;
+                }
+
+            div.datepicker-container > div.middle-panel > table.calendar > tbody > tr.week-row > td.date-visible.date-disabled {
+                background-color: lightgray;
+                color: darkgray;
+            }
+
+div.datepicker-container > div.bottom-panel {
+    padding: 10px 0px;
+}
+
+    div.datepicker-container > div.bottom-panel > table.calendar {
+        margin: 0px;
+        background-color: transparent;
+        padding: 4px 8px;
+    }
+
+
+        div.datepicker-container > div.bottom-panel > table.calendar > tbody > tr > td {
+            padding: 4px 8px;
+            background-color: transparent;
+            border: 0px;
+        }
+
+    div.datepicker-container > div.bottom-panel a.today {
+        font-weight: bold;
+        color: #0028EA;
+        text-decoration: none;
+    }

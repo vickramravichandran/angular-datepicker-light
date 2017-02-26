@@ -1,0 +1,26 @@
+{
+  "name": "angular-datepicker-light development",
+  "homepage": "https://github.com/vickramravichandran/angular-datepicker-light",
+  "authors": [
+    "vickramravichandran"
+  ],
+  "description": "angular-datepicker-light development",
+  "main": "Index.html",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    ".DS_Store"
+  ],
+  "dependencies": {
+    "angular": "^1.6.2",
+    "bootstrap": "^3.3.7",
+    "jquery": "^3.1.1",
+    "moment": "^2.17.1",
+    "normalize-css": "^5.0.0"
+  }
+}
