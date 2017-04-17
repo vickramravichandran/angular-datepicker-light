@@ -315,6 +315,7 @@
                 that.todayDate = minDate;
             }
 
+            that.showTodayDate = that.options.showTodayDate;
             that.todayDateDisplay = formatDate(now, that.options.todayDateFormat);
 
             var defaultDate = getDefaultDate();
@@ -349,7 +350,7 @@
             }
 
             // date is valid and in range.
-            // sets the that.selectedMonth and that.selectedYear if different
+            // set that.selectedMonth and that.selectedYear if different
             var updated = setMonthYear(date);
             // build calendar only if month or year changed
             if (updated) {
@@ -362,12 +363,16 @@
         this.activate = function () {
             activeInstanceId = that.instanceId;
             
-            // update the the target with the current selected date if the target text is not a valid date
+            // update target with the current selected date if the target text is not a valid date
             var targetValue = jQueryTargetValue();
-            if (targetValue === null || targetValue.length === 0 || parseDate(targetValue) === null) {
-                if (that.selectedData) {
-                    updateTargetModel(formatDate(that.selectedData.date));
-                }
+            var date = parseDate(targetValue);
+            var targetIsEmpty = (targetValue === null || targetValue.length === 0);
+            var targetIsInvalid = !date || !isDateInRange(date);
+            
+            if ((targetIsEmpty && that.options.setTargetIfEmpty) ||
+                (targetIsInvalid && that.options.setTargetIfInvalid)) {
+                
+                tryUpdateTarget();
             }
             else {
                 that.tryApplyDateFromTarget();
@@ -878,7 +883,7 @@
             that.selectedData = cellData;
 
             if (!updatingFromTarget) {
-                updateTargetModel(formatDate(that.selectedData.date));
+                tryUpdateTarget();
             }
 
             safeCallback(that.options.dateSelected, {
@@ -983,18 +988,24 @@
             that.container.position(pos);
         }
 
-        function updateTargetModel(modelValue) {
+        function tryUpdateTarget() {
+            if (!that.selectedData.date) {
+                return;
+            }
+
+            var formattedDate = formatDate(that.selectedData.date);
+
             // textModelCtrl will be null if ng-model directive 
             // is not applied to the input element or may be the target is a non-input div, span etc.
             // in this scenario try updating using jquery
             if (that.textModelCtrl === null) {
-                jQueryTargetValue(modelValue);
+                jQueryTargetValue(formattedDate);
                 return;
             }
 
             // update only if different from current value
-            if (modelValue !== that.textModelCtrl.$modelValue) {
-                that.textModelCtrl.$setViewValue(modelValue);
+            if (that.textModelCtrl.$modelValue !== that.selectedData.date) {
+                that.textModelCtrl.$setViewValue(formattedDate);
                 that.textModelCtrl.$render();
             }
         }
@@ -1053,10 +1064,6 @@
                 }
             }
         })();
-        
-        datepickerLightService.defaultOptionsDoc = function () {
-            return defaultOptionsDoc;
-        }
     }
 
     function datepickerLightService() {
@@ -1073,6 +1080,10 @@
                 value.hideIfInactive();
             });
         }
+        
+        this.getDefaultOptionsDoc = function () {
+            return defaultOptionsDoc;
+        }
     }
 
     var instanceCount = 0;
@@ -1083,11 +1094,14 @@
         appendToBody: true,
         dateFormat: 'MM/DD/YYYY',
         todayDateFormat: 'ddd MMM DD YYYY',
+        showTodayDate: true,
         defaultDate: null,
         minDate: null,
         maxDate: null,
         firstDayOfWeek: 0,
         showOtherMonthDates: false,
+        setTargetIfEmpty: true,
+        setTargetIfInvalid: true,
         containerCssClass: null,
         /*position using jQuery*/
         positionUsingJQuery: false,
@@ -1112,7 +1126,7 @@
             doc: 'If set to true displays the datepicker inline below the target. If set to false appends the datepicker to the body. Alternatively, set to a jQuery element to append the datepicker to.'
         },
         appendToBody: {
-            def: true,
+            def: 'true',
             doc: 'If set to true appends the datepicker to the body. If set to false, appends the datepicker after the target element. This setting has no effect if inline is set to true.'
         },
         dateFormat: {
@@ -1122,6 +1136,10 @@
         todayDateFormat: {
             def: 'ddd MMM DD YYYY',
             doc: 'The date format used to display today date. For a full list of the possible formats see the <a href="http://momentjs.com/docs/#/displaying/format/">momentjs documentation<a>'
+        },
+        showTodayDate: {
+            def: 'true',
+            doc: 'Display today date at the bottom of the datepicker.'
         },
         defaultDate: {
             def: 'null',
@@ -1143,12 +1161,20 @@
             def: 'false',
             doc: 'Display dates from other months at the start or end of the current month.'
         },
+        setTargetIfEmpty: {
+            def: 'true',
+            doc: 'If the target is empty when the datepicker is activated, updates the target with the selected date.'
+        },
+        setTargetIfInvalid: {
+            def: 'true',
+            doc: 'If the target date is invalid when the datepicker is activated, updates the target with the selected date.'
+        },
         containerCssClass: {
             def: 'null',
             doc: 'CSS class applied to the datepicker container'
         },
         positionUsingJQuery: {
-            def: false,
+            def: 'false',
             doc: 'If true will position the datepicker container using the position() method from the jQueryUI library. See <a href="https://api.jqueryui.com/position/">jQueryUI.position() documentation</a>'
         },
         positionUsing: {
@@ -1263,7 +1289,7 @@
     html += '        </tbody>';
     html += '    </table>';
     html += '</div>';
-    html += '<div class="bottom-panel">';
+    html += '<div class="bottom-panel" ng-show="ctrl.showTodayDate">';
     html += '    <table class="calendar" border="0" cellpadding="0" cellspacing="0">';
     html += '        <tbody>';
     html += '            <tr class="today">';
