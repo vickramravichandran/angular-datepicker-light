@@ -26,7 +26,8 @@
     // on focus
     function OnFocusCtrl() {
         var vm = this;
-        vm.date = "07/01/2016";
+        
+        vm.date = moment(new Date()).format('MM/DD/YYYY');
         vm.datepickerOptions = {
             altTarget: $("#calendarIcon")
         };
@@ -36,7 +37,7 @@
     function InlineCtrl() {
         var vm = this;
 
-        vm.date = "07/01/2016";
+        vm.date = new Date();
         vm.datepickerOptions = {
             inline: true,
             containerCssClass: "datepicker-container-inline"
@@ -47,7 +48,7 @@
     function InlineDisabledDatesCtrl() {
         var vm = this;
 
-        vm.date = "07/20/2016";
+        vm.date = new Date();
         vm.datepickerOptions = {
             inline: true,
             containerCssClass: "datepicker-container-inline",
@@ -63,7 +64,7 @@
     function InlineOtherMonthDatesCtrl() {
         var vm = this;
 
-        vm.date = "07/01/2016";
+        vm.date = new Date();
         vm.datepickerOptions = {
             inline: true,
             showOtherMonthDates: true,
@@ -75,7 +76,7 @@
     function InlineCustomWeekStartCtrl() {
         var vm = this;
 
-        vm.date = "07/01/2016";
+        vm.date = new Date();
         vm.datepickerOptions = {
             inline: true,
             firstDayOfWeek: 3, // week starts on Wednesday
@@ -86,7 +87,7 @@
     function InlineDivTargetCtrl() {
         var vm = this;
 
-        vm.date = "07/04/2016";
+        vm.date = new Date();
         vm.datepickerOptions = {
             inline: true,
             containerCssClass: "datepicker-container-inline",
@@ -96,7 +97,7 @@
 
     PluginOptionsCtrl.$inject = ['datepickerLightService'];
     function PluginOptionsCtrl(datepickerLightService) {
-        this.options = datepickerLightService.defaultOptionsDoc();
+        this.options = datepickerLightService.getDefaultOptionsDoc();
     }
 
 })();

@@ -30,7 +30,7 @@
     .controller('OnFocusCtrl', function () {
         var vm = this;
         
-        vm.date = "07/01/2016";
+        vm.date = moment(new Date()).format('MM/DD/YYYY');
         vm.datepickerOptions = {
             altTarget: $("#calendarIcon")
         };
