@@ -13,6 +13,7 @@
         factory(global.angular, global.moment);
     }
 }(this, function (angular, moment) {
+    var activeInstanceId = 0;
 
     angular
         .module('datepickerLightModule', [])
@@ -38,18 +39,18 @@
         }
     }
 
-    datepickerLightDirective.$inject = ["$compile", "$document", "$window", "$timeout", "$templateRequest", "datepickerLightService"];
+    datepickerLightDirective.$inject = ['$compile', '$document', '$window', '$timeout', '$templateRequest', 'datepickerLightService'];
     function datepickerLightDirective($compile, $document, $window, $timeout, $templateRequest, datepickerLightService) {
 
         return {
-            restrict: "A",
+            restrict: 'A',
             scope: {
                 options: '&angularDatepickerLight'
             },
             transclude: false,
-            controllerAs: "ctrl",
+            controllerAs: 'ctrl',
             bindToController: true,
-            require: ["angularDatepickerLight", "?ngModel"],
+            require: ['angularDatepickerLight', '?ngModel'],
             link: postLinkFn,
             controller: MainCtrl
         }
@@ -60,107 +61,150 @@
 
             datepickerLightService.addDirectiveCtrl(ctrl);
 
-            // execute the options expression in the parent scope
-            var options = ctrl.options() || {
-            };
-            ctrl.init(angular.extend({
-            }, defaultOptions, options));
-
             // store the jquery element on the controller          
             ctrl.target = element;
 
-            initContainer(html);
+            // wait for page load before initialization to avoid any missing selectors
+            $timeout(function(){
+                // execute the options expression
+                var options = ctrl.options() || {};
+                ctrl.init(angular.extend({}, defaultOptions, options));
+                
+                initContainer(html);
+                wireupEvents();
+            });
             
             function initContainer(template) {
                 var templateFn = $compile(template);
                 ctrl.container = templateFn(scope);
 
-                if (angular.isDefined(ctrl.options.containerCssClass && ctrl.options.containerCssClass !== null)) {
+                if (ctrl.options.containerCssClass) {
                     ctrl.container.addClass(ctrl.options.containerCssClass);
                 }
 
-                // if inline == true append container after the textbox
-                if (ctrl.options.inline === true) {
-                    element.after(ctrl.container);
-                }
-                    // if a jquery parent is specified in options append the container
-                else if (angular.isElement(ctrl.options.inline)) {
-                    ctrl.options.inline.append(ctrl.container);
-                    // else append container to body                    
-                } else {
-                    $document.find("body").append(ctrl.container);
-                    ctrl.container.addClass("datepicker-absolute-container");
-                }
+                appendContainerToDOM(ctrl);
 
                 // if a jquery altTarget is specified in options append the container
                 // altTarget supported only for non-inline
                 if (!ctrl.isInline() && angular.isElement(ctrl.options.altTarget)) {
                     // focus the textbox when the alt target(ex: image icon) is clicked
-                    ctrl.options.altTarget.on("click focus", function (e) {
+                    ctrl.options.altTarget.on('click focus', function (event) {
                         scope.$evalAsync(function () {
                             ctrl.activate();
                         });
                     });
                 }
-
-                // prevents text select on mouse drag, dblclick
-                ctrl.container.css("MozUserSelect", "none").bind("selectstart", function () {
-                    return false;
-                });
             }
+
+            function appendContainerToDOM(ctrl) {
+                // if inline is true append container after the textbox
+                if (ctrl.options.inline === true) {
+                    ctrl.target.after(ctrl.container);
+                    return;
+                }
+
+                // if a jquery element is specified in options append the container to it
+                if (angular.isElement(ctrl.options.inline)) {
+                    ctrl.options.inline.append(ctrl.container);
+                    return;
+                }
+                
+                // container will be positioned absolutely
+                ctrl.container.addClass('datepicker-absolute-container');
+                if (ctrl.options.appendToBody) {
+                    $document.find('body').append(ctrl.container);
+                    return;
+                }
+                
+                ctrl.target.after(ctrl.container);
+            }
+
+            function wireupEvents() {
             
-            $document.ready(function(){
-                // activate all inline date pickers and call ready callback
-                scope.$evalAsync(function () {
-                    if (ctrl.isInline()) {
+                $document.ready(function(){
+                    // activate all inline date pickers and call ready callback
+                    scope.$evalAsync(function () {
+                        if (ctrl.isInline()) {
+                            ctrl.activate();
+                        }
+                        
+                        ctrl.ready();
+                    });
+                });
+
+                // when the target(textbox) gets focus activate the corresponding container
+                element.on('click focus', function (event) {
+                    scope.$evalAsync(function () {
                         ctrl.activate();
-                    }
-                    
-                    ctrl.ready();
+                    });
                 });
-            })
 
-            // when the target(textbox) gets focus activate the corresponding container
-            element.on("click focus", function (e) {
-                scope.$evalAsync(function () {
-                    ctrl.activate();
+                // when the target(textbox) changes
+                element.on('keydown', function (event) {
+                    scope.$evalAsync(function () {
+                        var term = element.val();
+                        if (term.length === 0 || term === ctrl.targetText) {
+                            return;
+                        }
+
+                        // wait few millisecs before trying to parse
+                        // this allows checking if user has stopped typing
+                        var delay = $timeout(function () {
+                            // is term unchanged?
+                            if (term == element.val()) {
+                                ctrl.tryApplyDateFromTarget();
+                            }
+
+                            //cancel the timeout
+                            $timeout.cancel(delay);
+                        }, 300);
+                    });
                 });
-            });
 
-            // when the target(textbox) changes
-            element.on("keydown", function (e) {
-                scope.$evalAsync(function () {
-                    var term = element.val();
-                    if (term.length === 0 || term === ctrl.targetText) {
+                angular.element($window).on('resize', function (event) {
+                    scope.$evalAsync(function () {
+                        ctrl.hide();
+                    });
+                });
+
+                // hide container upon CLICK outside of the dropdown rectangle region
+                $document.on('click', function (event) {
+                    scope.$evalAsync(function () {
+                        _documentClick(event);
+                    });
+                });
+
+                function _documentClick(event) {
+                    // hide inactive dropdowns
+                    datepickerLightService.hideIfInactive();
+
+                    // ignore inline
+                    if (ctrl.isInline()) {
                         return;
                     }
 
-                    // wait few millisecs before trying to parse
-                    // this allows checking if user has stopped typing
-                    var delay = $timeout(function () {
-                        // is term unchanged?
-                        if (term == element.val()) {
-                            ctrl.tryApplyDateFromTarget();
-                        }
+                    // no container. probably destroyed in scope $destroy 
+                    if (!ctrl.container) {
+                        return;
+                    }
 
-                        //cancel the timeout
-                        $timeout.cancel(delay);
-                    }, 300);
-                });
-            });
+                    // ignore target click
+                    if (event.target === ctrl.target[0]) {
+                        return;
+                    }
 
-            angular.element($window).on("resize", function (e) {
-                scope.$evalAsync(function () {
+                    // ignore clicks on altTarget
+                    if (ctrl.options.altTarget && event.target === ctrl.options.altTarget[0]) {
+                        return;
+                    }
+
+                    if(ctrl.container.has(event.target).length > 0) {
+                        return;
+                    }
+
                     ctrl.hide();
-                });
-            })
-
-            // hide container upon CLICK outside of the dropdown rectangle region
-            $document.on("click", function (e) {
-                scope.$evalAsync(function () {
-                    _documentClick(e);
-                });
-            });
+                }
+            }
 
             // cleanup on destroy
             var destroyFn = scope.$on('$destroy', function () {
@@ -172,81 +216,21 @@
                 destroyFn()
             });
 
-            function _documentKeyDown(e) {
-                // hide inactive instances
-                datepickerLightService.hideIfInactive();
-            }
-
-            function _documentClick(e) {
-                // hide inactive dropdowns
-                datepickerLightService.hideIfInactive();
-
-                // we care about the active non-inline one only
-                if (ctrl.instanceId !== ctrl.activeInstanceId() || ctrl.isInline()) {
-                    return;
-                }
-
-                // no container. probably destroyed in scope $destroy 
-                if (!ctrl.container) {
-                    return;
-                }
-
-                // hide the active calendar if user clicks anywhere away from the dropdown list
-                var offset = ctrl.container[0].getBoundingClientRect();
-                var isMouseAwayFromActiveContainer = false;
-                var awayTolerance = ctrl.options.datepickerClickMargin;
-
-                //check if mouse is over the container
-                if (e.pageX < offset.left - awayTolerance
-                    || e.pageX > offset.left + offset.width + awayTolerance
-                    || e.pageY < offset.top - awayTolerance
-                    || e.pageY > offset.top + offset.height + awayTolerance) {
-
-                    isMouseAwayFromActiveContainer = true;
-
-                    //check if mouse is over the target (textbox)
-                    offset = ctrl.target[0].getBoundingClientRect();
-                    if (e.pageX >= offset.left
-                        && e.pageX <= offset.left + offset.width
-                        && e.pageY >= offset.top
-                        && e.pageY <= offset.top + offset.height) {
-
-                        isMouseAwayFromActiveContainer = false;
-                    }
-
-                    //check if mouse is over the alt target (ex:image icon)
-                    if (angular.isElement(ctrl.options.altTarget)) {
-                        offset = ctrl.options.altTarget[0].getBoundingClientRect();
-                        if (e.pageX >= offset.left
-                            && e.pageX <= offset.left + offset.width
-                            && e.pageY >= offset.top
-                            && e.pageY <= offset.top + offset.height) {
-
-                            isMouseAwayFromActiveContainer = false;
-                        }
-                    }
-
-                    if (isMouseAwayFromActiveContainer === true) {
-                        ctrl.hide();
-                    }
-                }
-            }
         }
     }
 
-    MainCtrl.$inject = ["$window", "$document", "datepickerLightService"];
-    function MainCtrl($window, $document, datepickerLightService) {
+    MainCtrl.$inject = ['$window', '$document', '$timeout', 'datepickerLightService'];
+    function MainCtrl($window, $document, $timeout, datepickerLightService) {
         var that = this;
 
-        var activeInstanceId = 0,
-            minDate = null,
+        var minDate = null,
             maxDate = null,
             calendarItems = [];
 
-        var monthNamesLong = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
-        //var monthNamesShort = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var monthNamesLong = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        //var monthNamesShort = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
-        var dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        var dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
         this.target = null;
         this.targetText = null;
@@ -262,10 +246,6 @@
 
         this.dayNames = [];
         this.weeks = [];
-
-        this.activeInstanceId = function () {
-            return activeInstanceId;
-        }
 
         // hide any open containers other than the active container
         this.hideIfInactive = function () {
@@ -297,12 +277,12 @@
             
             // set min and max date values
             // if not provided in options default minDate to 1/1/(-5 years) and maxDate to 12/31/(+5 years) of next year
-            if (isUndefinedOrNull(minDate)) {
+            if (!minDate) {
                 minDate = new Date(now.getFullYear() - 5, 0, 1);
             }
 
             // maxdate
-            if (isUndefinedOrNull(maxDate)) {
+            if (!maxDate) {
                 maxDate = new Date(now.getFullYear() + 5, 11, 31);
             }
 
@@ -335,13 +315,14 @@
                 that.todayDate = minDate;
             }
 
-            that.todayDateDisplay = formatDate(now, "ddd MMM DD YYYY");
+            that.showTodayDate = that.options.showTodayDate;
+            that.todayDateDisplay = formatDate(now, that.options.todayDateFormat);
 
             var defaultDate = getDefaultDate();
             
             that.selectedMonth = defaultDate.getMonth();
             that.selectedYear = defaultDate.getFullYear();
-            that.selectedData = getCellData(defaultDate);
+            that.selectedData = createCellData(defaultDate);
             
             buildCalendar();
 
@@ -362,34 +343,47 @@
                 that.targetText = that.textModelCtrl.$viewValue;    
             }
 
+            // if date is valid and in range, build calendar if month or year changed
             var date = parseDate(that.targetText);
-
-            // if date is valid and in range build calendar if needed
-            if (date !== null && isDateInRange(date)) {
-                // sets the that.selectedMonth and that.selectedYear if different
-                var updated = setMonthYear(date);
-
-                // build calendar only if month or year changed
-                if (updated === true) {
-                    buildCalendar();
-                }
-
-                applySelection(date, true);
+            if(!date || !isDateInRange(date)) {
+                return;
             }
+
+            // date is valid and in range.
+            // set that.selectedMonth and that.selectedYear if different
+            var updated = setMonthYear(date);
+            // build calendar only if month or year changed
+            if (updated) {
+                buildCalendar();
+            }
+
+            applySelection(date, true);
         }
         
         this.activate = function () {
             activeInstanceId = that.instanceId;
-
-            // update the the target with the current selected date if the target text is not a valid date
+            
+            // update target with the current selected date if the target text is not a valid date
             var targetValue = jQueryTargetValue();
-            if (targetValue === null || targetValue.length === 0 || parseDate(targetValue) === null) {
-                if (!isUndefinedOrNull(that.selectedData)) {
-                    updateTargetModel(formatDate(that.selectedData.date));
-                }
+            var date = parseDate(targetValue);
+            var targetIsEmpty = (targetValue === null || targetValue.length === 0);
+            var targetIsInvalid = !date || !isDateInRange(date);
+            
+            if ((targetIsEmpty && that.options.setTargetIfEmpty) ||
+                (targetIsInvalid && that.options.setTargetIfInvalid)) {
+                
+                tryUpdateTarget();
             }
             else {
                 that.tryApplyDateFromTarget();
+            }
+
+            // if inline set container visibility only once
+            if (that.isInline()) {
+                if (!that.containerVisible) {
+                    that.containerVisible = true;
+                }
+                return;
             }
 
             that.show();
@@ -454,13 +448,13 @@
 
             var dateVisible = that.isDateVisible(cellData.date);
 
-            css["date-visible"] = dateVisible;
-            css["date-other-month"] = dateVisible && that.isOtherMonth(cellData.date);
-            css["date-selected"] = dateVisible && that.isDateSelected(cellData.date);
-            css["date-disabled"] = dateVisible && (cellData.enabled === false);
+            css['date-visible'] = dateVisible;
+            css['date-other-month'] = dateVisible && that.isOtherMonth(cellData.date);
+            css['date-selected'] = dateVisible && that.isDateSelected(cellData.date);
+            css['date-disabled'] = dateVisible && !cellData.enabled;
 
             // custom css class added in callback
-            if (!isUndefinedOrNull(cellData.cssClass)) {
+            if (cellData.cssClass) {
                 css[cellData.cssClass] = true;
             }
 
@@ -475,13 +469,12 @@
             // sets the that.selectedMonth and that.selectedYear if different
             // this is required if the selected date belongs to other month
             var updated = setMonthYear(cellData.date);
-
             // build calendar only if month or year changed
-            if (updated === true) {
+            if (updated) {
                 buildCalendar();
             }
 
-            applySelection(cellData.date);
+            applySelection(cellData.date, false);
 
             that.hide();
         }
@@ -494,27 +487,19 @@
 
             // sets the that.selectedMonth and that.selectedYear if different
             var updated = setMonthYear(that.todayDate);
-
             // build calendar only if month or year changed
-            if (updated === true) {
+            if (updated) {
                 buildCalendar();
             }
 
-            applySelection(that.todayDate);
+            applySelection(that.todayDate, false);
 
             that.hide();
         }
 
 
         this.show = function () {
-            // position calendar if not displayed inline
-            if (!that.isInline()) {
-                // the textbox position can change (ex: window resize)
-                // so reposition the datepicker before it's shown
-                positionDatepicker();
-            }
-
-            that.containerVisible = true;
+            positionDatepicker();
 
             // callback
             safeCallback(that.options.datepickerShown);
@@ -527,7 +512,7 @@
             }
 
             // exit if already hidden
-            if (that.containerVisible === false) {
+            if (!that.containerVisible) {
                 return;
             }
 
@@ -541,7 +526,7 @@
         this.isDateVisible = function (date) {
             // if date is from previous/next month show/hide as set in options
             if (date.getMonth() !== that.selectedMonth) {
-                if (that.options.showOtherMonthDates === true) {
+                if (that.options.showOtherMonthDates) {
                     return true;
                 }
 
@@ -556,7 +541,7 @@
         }
 
         this.isDateSelected = function (date) {
-            if (!isUndefinedOrNull(that.selectedData) && angular.isObject(that.selectedData)) {
+            if (that.selectedData && that.selectedData.date) {
                 return areDatesEqual(date, that.selectedData.date);
             }
 
@@ -569,8 +554,8 @@
             });
 
             // object exists?
-            if (!isUndefinedOrNull(cellData)) {
-                return cellData.enabled === true;
+            if (cellData) {
+                return cellData.enabled;
             }
 
             // cell data with given date not found
@@ -579,65 +564,59 @@
 
         
         this.getDate = function() {
-            if (!isUndefinedOrNull(that.selectedData) && angular.isObject(that.selectedData)) {
+            if (that.selectedData && that.selectedData.date) {
                 return that.selectedData.date;
             }
         }
         
         this.setDate = function(dateToSelect) {
-            if (isUndefinedOrNull(dateToSelect)) {
+            if (!dateToSelect) {
                 return;
             }
             
             // is it a Date object?
             if (angular.isDate(dateToSelect) && isDateInRange(dateToSelect)) {
-                that.dateSelect(getCellData(dateToSelect));
+                that.dateSelect(createCellData(dateToSelect));
                 return;
             }
             
             // parse string
-            if (angular.isString(dateToSelect)) {
-                var date = parseDate(dateToSelect);
-            
-                if (!isUndefinedOrNull(date) && isDateInRange(date)) {
-                    that.dateSelect(getCellData(date));
-                }
+            if (!angular.isString(dateToSelect)) {
+                return;
+            }
+
+            var date = parseDate(dateToSelect);
+            if (date && isDateInRange(date)) {
+                that.dateSelect(createCellData(date));
             }
         }
         
 
         function getDefaultDate() {
-            var defaultDate;
+            var defaultDate = that.options.defaultDate;
             
             // if defaultDate is not provided default to today
-            if (isUndefinedOrNull(that.options.defaultDate)) {
+            if (!defaultDate) {
                 return that.todayDate;
             }
             
-            // is it a date instance?
-            if (angular.isDate(that.options.defaultDate)) {
-                defaultDate = that.options.defaultDate;
+            // is it a date instance and within range?
+            if (angular.isDate(defaultDate) && isDateInRange(defaultDate)) {
+                return defaultDate;
             }
-            // try parsing the 'defaultDate' from options
-            else {
-                var date = parseDate(that.options.defaultDate);
+            
+            // is it a string?
+            if (!angular.isString(defaultDate)) {
+                return that.todayDate;
+            }
 
-                // if parsing failed set default to todayDate
-                if (date === null) {
-                    defaultDate = that.todayDate;
-                }
-                else {
-                    defaultDate = date;
-                }
+            // try parsing the 'defaultDate' from options
+            var date = parseDate(defaultDate);
+            if (date && isDateInRange(date)) {
+                return date;
             }
-            
-            // at this point defaultDate is either 'today' or 'options.defaultDate'
-            // if defaultDate is outside valid date range default to todayDate
-            if (!isDateInRange(defaultDate)) {
-                defaultDate = that.todayDate;
-            }
-            
-            return defaultDate;
+
+            return that.todayDate;
         }
         
         function getPreviousMonthYear(month, year) {
@@ -692,7 +671,7 @@
         function isMonthYearInRange (month, year) {
             // adjust month to 1-based because format date returns month as 1-based
             var monthPlusOne = month + 1;
-            var leadingZero = monthPlusOne < 10 ? "0" : "";
+            var leadingZero = monthPlusOne < 10 ? '0' : '';
             
             if (parseInt(year + leadingZero + monthPlusOne) < parseInt(formatDate(minDate, 'YYYYMM'))
                 || parseInt(year + leadingZero + monthPlusOne) > parseInt(formatDate(maxDate, 'YYYYMM'))) {
@@ -766,19 +745,19 @@
             // if first day of month != firstDayOfWeek then start dates from prior month
             if (firstDayOfWeek != firstDayOfMonth) {
                 var daysBefore = getDaysBeforeFirstDayOfMonth(firstDayOfWeek, firstDayOfMonth);
-                if (!isUndefinedOrNull(daysBefore)) {
+                if (daysBefore) {
                     // 0 is one day prior; 1 is two days prior and so forth
                     date = date - daysBefore;
                 }
             }
 
             while (date <= getDaysInMonth(year, month)) {
-                calendarItems.push(getCellData(getDate(year, month, date++)));
+                calendarItems.push(createCellData(getDate(year, month, date++)));
             }
 
             // fill remaining cells with dates from next month
             while ((calendarItems.length % 7) !== 0) {
-                calendarItems.push(getCellData(getDate(year, month, date++)));
+                calendarItems.push(createCellData(getDate(year, month, date++)));
             }
 
             // populate the that.weeks array. create a 2D array of 7 days per row
@@ -813,28 +792,17 @@
                 });
 
                 // pass an empty literal in case nothing was returned from callback
-                copySupportedProperties(cbRetVal || {
-                }, cellData);
+                copySupportedProperties((cbRetVal || {}), cellData);
             });
         }
 
         function copySupportedProperties(cbRetVal, cellData) {
-            // if callbackArgs.enabled is undefined default to true
-            if (isUndefinedOrNull(cbRetVal.enabled)) {
-                cellData.enabled = true;
-            }
-            else {
-                cellData.enabled = cbRetVal.enabled;
-            }
+            // if cbRetVal.enabled is undefined default to true
+            cellData.enabled = isUndefinedOrNull(cbRetVal.enabled) ? true : cbRetVal.enabled;
 
-            // in order to set selected = true, enabled must also be true
-            if (cbRetVal.selected === true && cellData.enabled === true) {
-                cellData.selected = true;
-            }
-            else {
-                cellData.selected = cbRetVal.selected;
-            }
-
+            // is cbRetVal.selected is explicitly set to true?
+            cellData.selected = (cbRetVal.selected === true && cellData.enabled);
+            
             // css class to apply to the date <td>
             cellData.cssClass = cbRetVal.cssClass
 
@@ -845,33 +813,24 @@
             cellData.tooltip = cbRetVal.tooltip;
         }
 
-        function postRenderDateCallback(dateToSelect) {
-            // after the renderDate callbacks find the object with cellData.selected == true.
-            // this might have been set on the cellData during callback
-            var selectedCellData = calendarItems.find(function (cellData) {
+        function getCellDataBySelectedState() {
+            // find the calendar item with selected = true.
+            // this might have been set during during the render callback
+            return calendarItems.find(function (cellData) {
                 // must be enabled to be able to select
-                return cellData.selected === true && cellData.enabled === true;
+                return cellData.selected && cellData.enabled;
             });
+        }
 
-            // if no object exists with 'selected' = true perform the following:
-            // 1. if 'dateToSelect' is provided find the cell data with that date
-            // 2. select the cellData if it exists and the selected property is not set
-            if (isUndefinedOrNull(selectedCellData)) {
-                if (angular.isDate(dateToSelect)) {
-                    var cellData = calendarItems.find(function (cellData) {
-                        // must be enabled to be able to select
-                        return areDatesEqual(cellData.date, dateToSelect)
-                            && cellData.enabled === true;
-                    });
-
-                    // set 'selected' to true only if its undefined/null
-                    if (angular.isObject(cellData) && isUndefinedOrNull(cellData.selected)) {
-                        selectedCellData = cellData;
-                    }
-                }
+        function getCellDataByDate(dateToSelect) {
+            if (!angular.isDate(dateToSelect)) {
+                return;
             }
-
-            return selectedCellData;
+            
+            // find the cell data that is enabled and not already selected
+            return calendarItems.find(function (cellData) {
+                return areDatesEqual(cellData.date, dateToSelect);
+            });
         }
 
 
@@ -883,11 +842,11 @@
             return moment().year(year).month(month).daysInMonth();
         }
 
-        function getCellData(date) {
+        function createCellData(date) {
             return {
                 date: date,
                 enabled: true,
-                selected: angular.undefined,
+                selected: false,
                 tooltip: angular.undefined,
                 cssClass: angular.undefined,
                 data: angular.undefined,
@@ -896,15 +855,17 @@
 
 
         function applySelection(dateToSelect, updatingFromTarget) {
-            var cellData = postRenderDateCallback(dateToSelect);
+            // give priority to the cellData.selected property
+            // the cellData.selected property can be set by the user during the renderDate callback
+            var cellData = getCellDataBySelectedState();
 
-            if (isUndefinedOrNull(cellData)) {
-                return;
-            }
+            // if no cell has selected property set, select the cell by date
+            if (!cellData) {
+                cellData = getCellDataByDate(dateToSelect);
 
-            // do not select if disabled
-            if (cellData.enabled === false) {
-                return;
+                if (!cellData || !cellData.enabled) {
+                    return;
+                }
             }
 
             var cbRetVal = safeCallback(that.options.beforeDateSelect, {
@@ -912,8 +873,8 @@
                 data: cellData.data
             });
 
-            // cancel selection if set to true from callback
-            if (!isUndefinedOrNull(cbRetVal) && cbRetVal.cancel === true) {
+            // cancel selection if explicitly set to true from callback
+            if (cbRetVal && cbRetVal.cancel === true) {
                 return;
             }
 
@@ -921,8 +882,8 @@
             that.selectedYear = cellData.date.getFullYear();
             that.selectedData = cellData;
 
-            if (updatingFromTarget !== true) {
-                updateTargetModel(formatDate(that.selectedData.date));
+            if (!updatingFromTarget) {
+                tryUpdateTarget();
             }
 
             safeCallback(that.options.dateSelected, {
@@ -986,52 +947,75 @@
         }
 
         function positionDatepicker() {
-            if (that.isInline()) {
-                return;
+            if (that.options.positionUsingJQuery && hasJQueryUI()) {
+                positionUsingJQuery();
             }
-
-            var rect = that.target[0].getBoundingClientRect();
-
-            // use the .position() function from jquery.ui if available
-            // requires both jquery and jquery-ui to be loaded
-            if ($window.jQuery && $window.jQuery.ui) {
-                var pos = {
-                    my: "left top",
-                    at: "left bottom",
-                    of: that.target,
-                    collision: "none flip"
-                };
-
-                if (!isUndefinedOrNull(that.options.positionUsing) && angular.isObject(that.options.positionUsing)) {
-                    pos = that.options.positionUsing;
-                }
-
-                that.container.position(pos);
-            } else {
-                var scrollTop = $document[0].body.scrollTop || $document[0].documentElement.scrollTop || $window.pageYOffset;
-                var scrollLeft = $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft || $window.pageXOffset;
-
-                that.container.css({
-                    "left": rect.left + scrollLeft + "px"
-                });
-                that.container.css({
-                    "top": rect.top + rect.height + scrollTop + 3 + "px"
-                });
+            else {
+                positionUsingDomAPI();
             }
         }
 
-        function updateTargetModel(modelValue) {
+        function hasJQueryUI() {
+            return (window.jQuery && window.jQuery.ui);
+        }
+
+        function positionUsingJQuery() {
+            // use the .position() function from jquery.ui if available
+            // requires both jquery and jquery-ui
+            if (!hasJQueryUI()) {
+                throw 'jQuery or jQuery.ui were not found.';
+            }
+
+            var defaultPosition = {
+                my: 'left top',
+                at: 'left bottom',
+                of: that.target,
+                collision: 'none flip'
+            };
+            
+            var pos = angular.extend({}, defaultPosition, that.options.positionUsing);
+            
+            // jquery.ui position() requires the container to be visible to calculate its position.
+            that.containerVisible = true; // used in the template to set ng-show.
+            that.container.css({ 'visibility': 'hidden' });
+            $timeout(function(){
+                that.container.position(pos);
+                that.container.css({ 'visibility': 'visible' });
+            });
+        }
+
+        function positionUsingDomAPI() {
+            var rect = that.target[0].getBoundingClientRect();
+
+            var scrollLeft = $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft || $window.pageXOffset;
+            var scrollTop = $document[0].body.scrollTop || $document[0].documentElement.scrollTop || $window.pageYOffset;
+            
+            that.container.css({
+                'left': rect.left + scrollLeft + 'px',
+                'top': rect.top + rect.height + scrollTop + 3 + 'px'
+            });
+            
+            that.containerVisible = true;
+        }
+
+        function tryUpdateTarget() {
+            if (!that.selectedData.date) {
+                return;
+            }
+
+            var formattedDate = formatDate(that.selectedData.date);
+
             // textModelCtrl will be null if ng-model directive 
             // is not applied to the input element or may be the target is a non-input div, span etc.
             // in this scenario try updating using jquery
             if (that.textModelCtrl === null) {
-                jQueryTargetValue(modelValue);
+                jQueryTargetValue(formattedDate);
                 return;
             }
 
             // update only if different from current value
-            if (modelValue !== that.textModelCtrl.$modelValue) {
-                that.textModelCtrl.$setViewValue(modelValue);
+            if (that.textModelCtrl.$modelValue !== that.selectedData.date) {
+                that.textModelCtrl.$setViewValue(formattedDate);
                 that.textModelCtrl.$render();
             }
         }
@@ -1048,14 +1032,14 @@
                 targetTextFn = that.target.html.bind(that.target);
             }
             
-            if (angular.isUndefined(value)) {
+            // getter
+            if (!value) {
                 return targetTextFn().trim();
             }
-            else {
-                targetTextFn(value);
-            }
-        }
 
+            // setter
+            targetTextFn(value);
+        }
 
         var methods = (function () {
             return {
@@ -1106,8 +1090,8 @@
                 value.hideIfInactive();
             });
         }
-
-        this.defaultOptionsDoc = function () {
+        
+        this.getDefaultOptionsDoc = function () {
             return defaultOptionsDoc;
         }
     }
@@ -1117,14 +1101,22 @@
     var defaultOptions = {
         altTarget: null,
         inline: false,
+        appendToBody: true,
         dateFormat: 'MM/DD/YYYY',
+        todayDateFormat: 'ddd MMM DD YYYY',
+        showTodayDate: true,
         defaultDate: null,
         minDate: null,
         maxDate: null,
         firstDayOfWeek: 0,
         showOtherMonthDates: false,
+        setTargetIfEmpty: true,
+        setTargetIfInvalid: true,
         containerCssClass: null,
-        datepickerClickMargin: 100,
+        /*position using jQuery*/
+        positionUsingJQuery: true,
+        positionUsing: null,
+        /*callbacks*/
         ready: angular.noop,
         monthYearChanged: angular.noop,
         datepickerShown: angular.noop,
@@ -1136,98 +1128,122 @@
 
     var defaultOptionsDoc = {
         altTarget: {
-            def: "null",
-            doc: "Normally this is the calendar icon jQuery element associated with the datepicker."
+            def: 'null',
+            doc: 'Normally this is the calendar icon jQuery element associated with the datepicker.'
         },
         inline: {
-            def: "false",
-            doc: "If set to true displays the datepicker inline below the target. Alternatively, set to a jQuery element to append the datepicker."
+            def: 'false',
+            doc: 'If set to true displays the datepicker inline below the target. If set to false appends the datepicker to the body. Alternatively, set to a jQuery element to append the datepicker to.'
+        },
+        appendToBody: {
+            def: 'true',
+            doc: 'If set to true appends the datepicker to the body. If set to false, appends the datepicker after the target element. This setting has no effect if inline is set to true.'
         },
         dateFormat: {
-            def: "MM/DD/YYYY",
-            doc: "The date format used to parse and display dates. For a full list of the possible formats see the <a href='http://momentjs.com/docs/#/displaying/format/'>momentjs documentation<a>"
+            def: 'MM/DD/YYYY',
+            doc: 'The date format used to parse and display dates. For a full list of the possible formats see the <a href="http://momentjs.com/docs/#/displaying/format/">momentjs documentation<a>'
+        },
+        todayDateFormat: {
+            def: 'ddd MMM DD YYYY',
+            doc: 'The date format used to display today date. For a full list of the possible formats see the <a href="http://momentjs.com/docs/#/displaying/format/">momentjs documentation<a>'
+        },
+        showTodayDate: {
+            def: 'true',
+            doc: 'Display today date at the bottom of the datepicker.'
         },
         defaultDate: {
-            def: "null",
-            doc: "The default date to select when the datepicker is first shown. Set to an actual Date object or as a string in the current dateFormat."
+            def: 'null',
+            doc: 'The default date to select when the datepicker is first shown. Set to an actual Date object or as a string in the current dateFormat.'
         },
         minDate: {
-            def: "null",
-            doc: "The minimum selectable date. If set to null defaults to 01/01 and five years in the past."
+            def: 'null',
+            doc: 'The minimum selectable date. If set to null defaults to 01/01 and five years in the past.'
         },
         maxDate: {
-            def: "null",
-            doc: "The maximum selectable date. If set to null defaults to 12/31 and five years in the future."
+            def: 'null',
+            doc: 'The maximum selectable date. If set to null defaults to 12/31 and five years in the future.'
         },
         firstDayOfWeek: {
-            def: "0",
-            doc: "The first day of the week. 0 is Sunday, 1 is Monday and so forth."
+            def: '0',
+            doc: 'The first day of the week. 0 is Sunday, 1 is Monday and so forth.'
         },
         showOtherMonthDates: {
-            def: "false",
-            doc: "Display dates from other months at the start or end of the current month."
+            def: 'false',
+            doc: 'Display dates from other months at the start or end of the current month.'
+        },
+        setTargetIfEmpty: {
+            def: 'true',
+            doc: 'If the target is empty when the datepicker is activated, updates the target with the selected date.'
+        },
+        setTargetIfInvalid: {
+            def: 'true',
+            doc: 'If the target date is invalid when the datepicker is activated, updates the target with the selected date.'
         },
         containerCssClass: {
-            def: "null",
-            doc: "CSS class applied to the datepicker container"
+            def: 'null',
+            doc: 'CSS class applied to the datepicker container'
         },
-        datepickerClickMargin: {
-             def: "100",
-             doc: "Defines the margin in pixels around the datepicker when inline is set to false. Clicking outside this margin closes the datepicker."
+        positionUsingJQuery: {
+            def: 'true',
+            doc: 'If true will position the datepicker container using the position() method from the jQueryUI library. See <a href="https://api.jqueryui.com/position/">jQueryUI.position() documentation</a>'
+        },
+        positionUsing: {
+            def: 'null',
+            doc: 'Options that will be passed to jQueryUI position() method.'
         },
         ready: {
-            def: "noop",
-            doc: "Callback after the datepicker is initialized and ready. The function receives an object with the following methods:",
+            def: 'noop',
+            doc: 'Callback after the datepicker is initialized and ready. The function receives an object with the following methods:',
             docArray: [    
-                {"getMonthYear": "Returns an object with the selected month and year."},
-                {"gotoMonthYear (month, year)": "Sets the selected month and year. The month and year must be within minDate and maxDate."},
-                {"getDate": "Returns the selected date."},
-                {"setDate (date)": "Sets the selected date in the datepicker. Set to an actual Date object or as a string in the current dateFormat. The date must be within minDate and maxDate."},
-                {"refresh": "Rebuilds the datepicker."}
+                {'getMonthYear': 'Returns an object with the selected month and year.'},
+                {'gotoMonthYear (month, year)': 'Sets the selected month and year. The month and year must be within minDate and maxDate.'},
+                {'getDate': 'Returns the selected date.'},
+                {'setDate (date)': 'Sets the selected date in the datepicker. Set to an actual Date object or as a string in the current dateFormat. The date must be within minDate and maxDate.'},
+                {'refresh': 'Rebuilds the datepicker.'}
             ]
         },
         monthYearChanged: {
-            def: "noop",
-            doc: "Callback when either the selected month or year changes. The function receives an object with the selected 'month' and 'year' as properties."
+            def: 'noop',
+            doc: 'Callback when either the selected month or year changes. The function receives an object with the selected "month" and "year" as properties.'
         },
         datepickerShown: {
-            def: "noop",
-            doc: "Callback when the datepicker is shown."
+            def: 'noop',
+            doc: 'Callback when the datepicker is shown.'
         },
         datepickerHidden: {
-            def: "noop",
-            doc: "Callback when the datepicker is hidden."
+            def: 'noop',
+            doc: 'Callback when the datepicker is hidden.'
         },
         renderDate: {
-            def: "noop",
-            doc: "Callback when the datepicker is being rendered. This is called for each date in the datepicker. The function receives an object with 'date' as parameter. Return an object with the following properties:",
+            def: 'noop',
+            doc: 'Callback when the datepicker is being rendered. This is called for each date in the datepicker. The function receives an object with "date" as parameter. Return an object with the following properties:',
             docArray: [ 
-                {"cssClass": "The CSS class to apply to the date cell."},
-                {"enabled": "Set to false to disable a date."},
-                {"selected": "Set to true to select a date."},
-                {"tooltip": "Tooltip for the date html table cell."},
-                {"data": "Set to any arbitrary data on the date cell."}
+                {'cssClass': 'The CSS class to apply to the date cell.'},
+                {'enabled': 'Set to false to disable a date.'},
+                {'selected': 'Set to true to select a date.'},
+                {'tooltip': 'Tooltip for the date html table cell.'},
+                {'data': 'Set to any arbitrary data on the date cell.'}
             ]
         },
         beforeDateSelect: {
-            def: "noop",
-            doc: "Callback before a date is about to be selected. The function receives an object with 'date' and 'data' properties. To prevent selecting the date return an object with 'cancel' set to true."
+            def: 'noop',
+            doc: 'Callback before a date is about to be selected. The function receives an object with "date" and "data" properties. To prevent selecting the date return an object with "cancel" set to true.'
         },
         dateSelected: {
-            def: "noop",
-            doc: "Callback after a date is selected. The function receives an object with 'date' and 'data' properties."
+            def: 'noop',
+            doc: 'Callback after a date is selected. The function receives an object with "date" and "data" properties.'
         }
     };
 
     
-    var html = "";
+    var html = '';
     
     html += '<div class="datepicker-container" data-instance-id="{{ctrl.instanceId}}" ng-show="ctrl.containerVisible">';
     html += '<div class="top-panel">';
     html += '    <table class="calendar" border="0" cellpadding="0" cellspacing="0">';
     html += '        <tbody>';
     html += '            <tr>';
-    html += '                <td style="text-align:left">';
+    html += '                <td style="text-align:left;">';
     html += '                    <select class="months" ';
     html += '                            ng-change="ctrl.monthChange(ctrl.selectedMonth)"';
     html += '                            ng-model="ctrl.selectedMonth"';
@@ -1283,7 +1299,7 @@
     html += '        </tbody>';
     html += '    </table>';
     html += '</div>';
-    html += '<div class="bottom-panel">';
+    html += '<div class="bottom-panel" ng-show="ctrl.showTodayDate">';
     html += '    <table class="calendar" border="0" cellpadding="0" cellspacing="0">';
     html += '        <tbody>';
     html += '            <tr class="today">';
