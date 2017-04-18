@@ -71,7 +71,7 @@
                 <div style="margin-top:20px; padding: 10px 0px">
                     <a role="button" class="btn btn-primary btn-lg" href="https://github.com/vickramravichandran/angular-datepicker-light/archive/demo.zip">Download</a>
                     <a role="button" class="btn btn-primary btn-lg" target="_blank" href="https://github.com/vickramravichandran/angular-datepicker-light">Source</a>
-                    <a role="button" class="btn btn-primary btn-lg" href="#options">Options</a>
+                    <a role="button" class="btn btn-primary btn-lg" onclick="scrollToOptions()">Options</a>
                 </div>
 
                 <div class="container-fluid">
@@ -116,4 +116,11 @@
         </main>
     </div>
 </body>
+
+<script type="text/javascript">
+    function scrollToOptions() {
+        document.getElementById('options').scrollIntoView();
+    }
+</script>
+
 </html>
