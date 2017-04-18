@@ -947,45 +947,55 @@
         }
 
         function positionDatepicker() {
-            if (that.options.positionUsingJQuery) {
+            if (that.options.positionUsingJQuery && hasJQueryUI()) {
                 positionUsingJQuery();
-                return;
             }
+            else {
+                positionUsingDomAPI();
+            }
+        }
 
-            var rect = that.target[0].getBoundingClientRect();
-            var scrollLeft = $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft || $window.pageXOffset;
-            var scrollTop = $document[0].body.scrollTop || $document[0].documentElement.scrollTop || $window.pageYOffset;
-            
-            that.container.css({
-                'left': rect.left + scrollLeft + 'px'
-            });
-            that.container.css({
-                'top': rect.top + rect.height + scrollTop + 3 + 'px'
-            });
-            
-            that.containerVisible = true;
+        function hasJQueryUI() {
+            return (window.jQuery && window.jQuery.ui);
         }
 
         function positionUsingJQuery() {
             // use the .position() function from jquery.ui if available
             // requires both jquery and jquery-ui
-            if (!$window.jQuery || !$window.jQuery.ui) {
+            if (!hasJQueryUI()) {
                 throw 'jQuery or jQuery.ui were not found.';
             }
 
-            var pos = {
+            var defaultPosition = {
                 my: 'left top',
                 at: 'left bottom',
                 of: that.target,
                 collision: 'none flip'
             };
+            
+            var pos = angular.extend({}, defaultPosition, that.options.positionUsing);
+            
+            // jquery.ui position() requires the container to be visible to calculate its position.
+            that.containerVisible = true; // used in the template to set ng-show.
+            that.container.css({ 'visibility': 'hidden' });
+            $timeout(function(){
+                that.container.position(pos);
+                that.container.css({ 'visibility': 'visible' });
+            });
+        }
 
-            if (that.options.positionUsing) {
-                pos = that.options.positionUsing;
-            }
+        function positionUsingDomAPI() {
+            var rect = that.target[0].getBoundingClientRect();
 
+            var scrollLeft = $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft || $window.pageXOffset;
+            var scrollTop = $document[0].body.scrollTop || $document[0].documentElement.scrollTop || $window.pageYOffset;
+            
+            that.container.css({
+                'left': rect.left + scrollLeft + 'px',
+                'top': rect.top + rect.height + scrollTop + 3 + 'px'
+            });
+            
             that.containerVisible = true;
-            that.container.position(pos);
         }
 
         function tryUpdateTarget() {
@@ -1104,7 +1114,7 @@
         setTargetIfInvalid: true,
         containerCssClass: null,
         /*position using jQuery*/
-        positionUsingJQuery: false,
+        positionUsingJQuery: true,
         positionUsing: null,
         /*callbacks*/
         ready: angular.noop,
@@ -1174,7 +1184,7 @@
             doc: 'CSS class applied to the datepicker container'
         },
         positionUsingJQuery: {
-            def: 'false',
+            def: 'true',
             doc: 'If true will position the datepicker container using the position() method from the jQueryUI library. See <a href="https://api.jqueryui.com/position/">jQueryUI.position() documentation</a>'
         },
         positionUsing: {
