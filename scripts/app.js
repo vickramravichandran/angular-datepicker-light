@@ -47,7 +47,7 @@
                 return {
                     enabled: enable,
                     tooltip: enable ? null : "We are closed!"
-                }
+                };
             },
             beforeDateSelect: function (e) {
                 var date = e.date.getDate();
