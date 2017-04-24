@@ -3,7 +3,7 @@
 
     angular
         .module('mainApp', ['datepickerLightModule', 'ngSanitize'])
-        .controller('MainCtrl', function($document){
+        .controller('MainCtrl', function(){
             // since we are loading example html using ng-include
             // need to call Prism.highlightElement after the content is loaded
             this.prism = function() {
@@ -55,7 +55,7 @@
             renderDate: function (e) {
                 return {
                     enabled: e.date.getDate() > 10
-                }
+                };
             }
         };
     }
