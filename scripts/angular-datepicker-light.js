@@ -13,7 +13,8 @@
         factory(global.angular, global.moment);
     }
 }(this, function (angular, moment) {
-    var activeInstanceId = 0;
+
+    var internalService = new InternalService();
 
     angular
         .module('datepickerLightModule', [])
@@ -36,11 +37,11 @@
             }
 
             return found;
-        }
+        };
     }
 
-    datepickerLightDirective.$inject = ['$compile', '$document', '$window', '$timeout', '$templateRequest', 'datepickerLightService'];
-    function datepickerLightDirective($compile, $document, $window, $timeout, $templateRequest, datepickerLightService) {
+    datepickerLightDirective.$inject = ['$compile', '$document', '$window', '$timeout'];
+    function datepickerLightDirective($compile, $document, $window, $timeout) {
 
         return {
             restrict: 'A',
@@ -53,13 +54,13 @@
             require: ['angularDatepickerLight', '?ngModel'],
             link: postLinkFn,
             controller: MainCtrl
-        }
+        };
 
         function postLinkFn(scope, element, attrs, ctrls) {
             var ctrl = ctrls[0]; //directive controller
             ctrl.textModelCtrl = ctrls[1]; // textbox model controller
 
-            datepickerLightService.addDirectiveCtrl(ctrl);
+            internalService.addDirectiveCtrl(ctrl);
 
             // store the jquery element on the controller          
             ctrl.target = element;
@@ -88,7 +89,7 @@
                 // altTarget supported only for non-inline
                 if (!ctrl.isInline() && angular.isElement(ctrl.options.altTarget)) {
                     // focus the textbox when the alt target(ex: image icon) is clicked
-                    ctrl.options.altTarget.on('click focus', function (event) {
+                    ctrl.options.altTarget.on('click focus', function () {
                         scope.$evalAsync(function () {
                             ctrl.activate();
                         });
@@ -133,14 +134,14 @@
                 });
 
                 // when the target(textbox) gets focus activate the corresponding container
-                element.on('click focus', function (event) {
+                element.on('click focus', function () {
                     scope.$evalAsync(function () {
                         ctrl.activate();
                     });
                 });
 
                 // when the target(textbox) changes
-                element.on('keydown', function (event) {
+                element.on('keydown', function () {
                     scope.$evalAsync(function () {
                         var term = element.val();
                         if (term.length === 0 || term === ctrl.targetText) {
@@ -161,7 +162,7 @@
                     });
                 });
 
-                angular.element($window).on('resize', function (event) {
+                angular.element($window).on('resize', function () {
                     scope.$evalAsync(function () {
                         ctrl.hide();
                     });
@@ -176,7 +177,7 @@
 
                 function _documentClick(event) {
                     // hide inactive dropdowns
-                    datepickerLightService.hideIfInactive();
+                    internalService.hideAllInactive();
 
                     // ignore inline
                     if (ctrl.isInline()) {
@@ -213,14 +214,14 @@
                     ctrl.container = null; 
                 }
 
-                destroyFn()
+                destroyFn();
             });
 
         }
     }
 
-    MainCtrl.$inject = ['$window', '$document', '$timeout', 'datepickerLightService'];
-    function MainCtrl($window, $document, $timeout, datepickerLightService) {
+    MainCtrl.$inject = ['$window', '$document', '$timeout'];
+    function MainCtrl($window, $document, $timeout) {
         var that = this;
 
         var minDate = null,
@@ -247,28 +248,16 @@
         this.dayNames = [];
         this.weeks = [];
 
-        // hide any open containers other than the active container
-        this.hideIfInactive = function () {
-            if (that.isInline()) {
-                return;
-            }
-
-            // hide if this is not the active instance
-            if (that.instanceId !== activeInstanceId) {
-                that.hide();
-            }
-        }
-
         this.isInline = function () {
             // options.inline can be either true or a jquery object
-            return that.options.inline === true
-                || angular.isElement(that.options.inline);
-        }
+            return that.options.inline === true ||
+                angular.isElement(that.options.inline);
+        };
 
 
         this.init = function (options) {
             that.options = options;
-            that.instanceId = ++instanceCount;
+            that.instanceId = internalService.getNewInstanceId();
 
             var now = new Date();
 
@@ -294,7 +283,11 @@
             }
             while (that.dayNames.length < 7) {
                 that.dayNames.push(dayNames[startIndex]);
-                startIndex < 6 ? startIndex++ : startIndex = 0;
+                if (startIndex < 6) {
+                    startIndex++;
+                } else {
+                    startIndex = 0;
+                }
             }
 
             // create an object array of month names
@@ -330,7 +323,7 @@
             for (i = minDate.getFullYear() ; i <= maxDate.getFullYear() ; i++) {
                 that.validYears.push(i);
             }
-        }
+        };
   
         
         this.tryApplyDateFromTarget = function () {
@@ -358,10 +351,10 @@
             }
 
             applySelection(date, true);
-        }
+        };
         
         this.activate = function () {
-            activeInstanceId = that.instanceId;
+            internalService.setActiveInstanceId(that.instanceId);
             
             // update target with the current selected date if the target text is not a valid date
             var targetValue = jQueryTargetValue();
@@ -387,11 +380,11 @@
             }
 
             that.show();
-        }
+        };
         
         this.ready = function() {
             safeCallback(that.options.ready, methods);
-        }
+        };
 
 
         this.monthChange = function () {
@@ -401,7 +394,7 @@
                 month: that.selectedMonth,
                 year: that.selectedYear
             });
-        }
+        };
 
         this.yearChange = function () {
             buildCalendar();
@@ -410,7 +403,7 @@
                 month: that.selectedMonth,
                 year: that.selectedYear
             });
-        }
+        };
 
 
         this.gotoPreviousMonth = function (month, year) {
@@ -425,7 +418,7 @@
                 month: that.selectedMonth,
                 year: that.selectedYear
             });
-        }
+        };
 
         this.gotoNextMonth = function (month, year) {
             var my = getNextMonthYear(month, year);
@@ -439,7 +432,7 @@
                 month: that.selectedMonth,
                 year: that.selectedYear
             });
-        }
+        };
 
 
         this.dateCellCssClass = function (cellData) {
@@ -459,11 +452,11 @@
             }
 
             return css;
-        }
+        };
 
         this.dateDisplay = function (cellData) {
             return formatDate(cellData.date, 'DD');
-        }
+        };
 
         this.dateSelect = function (cellData) {
             // sets the that.selectedMonth and that.selectedYear if different
@@ -477,7 +470,7 @@
             applySelection(cellData.date, false);
 
             that.hide();
-        }
+        };
 
         this.todayDateSelect = function () {
             // if date is not in range, do not select and do not hide
@@ -495,7 +488,7 @@
             applySelection(that.todayDate, false);
 
             that.hide();
-        }
+        };
 
 
         this.show = function () {
@@ -503,7 +496,7 @@
 
             // callback
             safeCallback(that.options.datepickerShown);
-        }
+        };
 
         this.hide = function () {
             // do not hide if displayed inline
@@ -520,7 +513,7 @@
 
             // callback
             safeCallback(that.options.datepickerHidden);
-        }
+        };
 
 
         this.isDateVisible = function (date) {
@@ -534,11 +527,11 @@
             }
 
             return true;
-        }
+        };
 
         this.isOtherMonth = function (date) {
             return date.getMonth() !== that.selectedMonth;
-        }
+        };
 
         this.isDateSelected = function (date) {
             if (that.selectedData && that.selectedData.date) {
@@ -546,7 +539,7 @@
             }
 
             return false;
-        }
+        };
 
         this.isDateEnabled = function (date) {
             var cellData = calendarItems.find(function (cellData) {
@@ -560,14 +553,14 @@
 
             // cell data with given date not found
             return false;
-        }
+        };
 
         
         this.getDate = function() {
             if (that.selectedData && that.selectedData.date) {
                 return that.selectedData.date;
             }
-        }
+        };
         
         this.setDate = function(dateToSelect) {
             if (!dateToSelect) {
@@ -589,7 +582,7 @@
             if (date && isDateInRange(date)) {
                 that.dateSelect(createCellData(date));
             }
-        }
+        };
         
 
         function getDefaultDate() {
@@ -673,8 +666,8 @@
             var monthPlusOne = month + 1;
             var leadingZero = monthPlusOne < 10 ? '0' : '';
             
-            if (parseInt(year + leadingZero + monthPlusOne) < parseInt(formatDate(minDate, 'YYYYMM'))
-                || parseInt(year + leadingZero + monthPlusOne) > parseInt(formatDate(maxDate, 'YYYYMM'))) {
+            if (parseInt(year + leadingZero + monthPlusOne) < parseInt(formatDate(minDate, 'YYYYMM')) ||
+                parseInt(year + leadingZero + monthPlusOne) > parseInt(formatDate(maxDate, 'YYYYMM'))) {
                 
                 return false;
             }
@@ -705,9 +698,11 @@
         // 3. if firstDayOfWeek becomes > 6 reset to 0
         // continue until firstDayOfWeek === firstDayOfMonth
         function getDaysBeforeFirstDayOfMonth(firstDayOfWeek, firstDayOfMonth) {
-            if (firstDayOfMonth === firstDayOfWeek
-                || firstDayOfMonth < 0 || firstDayOfMonth > 6
-                || firstDayOfWeek < 0 || firstDayOfWeek > 6) {
+            if (firstDayOfMonth === firstDayOfWeek ||
+                firstDayOfMonth < 0 ||
+                firstDayOfMonth > 6 ||
+                firstDayOfWeek < 0 ||
+                firstDayOfWeek > 6) {
 
                 return;
             }
@@ -804,7 +799,7 @@
             cellData.selected = (cbRetVal.selected === true && cellData.enabled);
             
             // css class to apply to the date <td>
-            cellData.cssClass = cbRetVal.cssClass
+            cellData.cssClass = cbRetVal.cssClass;
 
             // arbitrary custom data to store with date
             cellData.data = cbRetVal.data;
@@ -849,8 +844,8 @@
                 selected: false,
                 tooltip: angular.undefined,
                 cssClass: angular.undefined,
-                data: angular.undefined,
-            }
+                data: angular.undefined
+            };
         }
 
 
@@ -923,8 +918,8 @@
             var momMinDate = moment(minDate);
             var momMaxDate = moment(maxDate);
 
-            return momDate.isSameOrAfter(momMinDate, 'd')
-                && momDate.isSameOrBefore(momMaxDate, 'd');
+            return momDate.isSameOrAfter(momMinDate, 'd') &&
+                   momDate.isSameOrBefore(momMaxDate, 'd');
         }
 
         function areDatesEqual(date1, date2) {
@@ -1072,31 +1067,46 @@
                 refresh: function () {
                     buildCalendar();
                 }
-            }
+            };
         })();
     }
 
-    function datepickerLightService() {
-        var directiveCtrls = [];
+    function InternalService () {
+        var that = this;
+        var pluginCtrls  = [];
+        var instanceCount = 0;
+        var activeInstanceId = 0;
 
         this.addDirectiveCtrl = function (ctrl) {
             if (ctrl) {
-                directiveCtrls.push(ctrl);
+                pluginCtrls .push(ctrl);
             }
-        }
+        };
 
-        this.hideIfInactive = function (ctrl) {
-            angular.forEach(directiveCtrls, function (value) {
-                value.hideIfInactive();
+        this.getNewInstanceId = function () {
+            return instanceCount++;
+        };
+
+        this.setActiveInstanceId = function (instanceId) {
+            activeInstanceId = instanceId;
+            that.hideAllInactive();
+        };
+
+        this.hideAllInactive = function () {
+            angular.forEach(pluginCtrls , function (ctrl) {
+                // hide if this is not the active instance
+                if (!ctrl.isInline() && ctrl.instanceId !== activeInstanceId) {
+                    ctrl.hide();
+                }
             });
-        }
-        
-        this.getDefaultOptionsDoc = function () {
-            return defaultOptionsDoc;
-        }
+        };
     }
 
-    var instanceCount = 0;
+    function datepickerLightService() {
+        this.getDefaultOptionsDoc = function () {
+            return defaultOptionsDoc;
+        };
+    }
 
     var defaultOptions = {
         altTarget: null,
@@ -1235,9 +1245,8 @@
         }
     };
 
-    
     var html = '';
-    
+
     html += '<div class="datepicker-container" data-instance-id="{{ctrl.instanceId}}" ng-show="ctrl.containerVisible">';
     html += '<div class="top-panel">';
     html += '    <table class="calendar" border="0" cellpadding="0" cellspacing="0">';
