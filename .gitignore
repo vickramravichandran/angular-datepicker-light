@@ -213,3 +213,6 @@ ModelManifest.xml
 
 bower_components
 .DS_Store
+.idea/
+dist/
+
