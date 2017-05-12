@@ -71,11 +71,17 @@
                 var options = ctrl.options() || {};
                 ctrl.init(angular.extend({}, defaultOptions, options));
                 
-                initContainer(html);
-                wireupEvents();
+                _initContainer(html);
+                _wireupEvents();
             });
+
+            // formatter and parser
+            if (ctrl.textModelCtrl !== null) {
+                ctrl.textModelCtrl.$parsers.unshift(ctrl.parseDate);
+                ctrl.textModelCtrl.$formatters.unshift(ctrl.formatDate);
+            }
             
-            function initContainer(template) {
+            function _initContainer(template) {
                 var templateFn = $compile(template);
                 ctrl.container = templateFn(scope);
 
@@ -83,7 +89,7 @@
                     ctrl.container.addClass(ctrl.options.containerCssClass);
                 }
 
-                appendContainerToDOM(ctrl);
+                _appendContainerToDOM(ctrl);
 
                 // if a jquery altTarget is specified in options append the container
                 // altTarget supported only for non-inline
@@ -97,7 +103,7 @@
                 }
             }
 
-            function appendContainerToDOM(ctrl) {
+            function _appendContainerToDOM(ctrl) {
                 // if inline is true append container after the textbox
                 if (ctrl.options.inline === true) {
                     ctrl.target.after(ctrl.container);
@@ -120,7 +126,7 @@
                 ctrl.target.after(ctrl.container);
             }
 
-            function wireupEvents() {
+            function _wireupEvents() {
             
                 $document.ready(function(){
                     // activate all inline date pickers and call ready callback
@@ -150,14 +156,14 @@
 
                         // wait few millisecs before trying to parse
                         // this allows checking if user has stopped typing
-                        var delay = $timeout(function () {
+                        var promise = $timeout(function () {
                             // is term unchanged?
                             if (term == element.val()) {
                                 ctrl.tryApplyDateFromTarget();
                             }
 
                             //cancel the timeout
-                            $timeout.cancel(delay);
+                            $timeout.cancel(promise);
                         }, 300);
                     });
                 });
@@ -261,8 +267,8 @@
 
             var now = new Date();
 
-            minDate = parseDate(that.options.minDate);
-            maxDate = parseDate(that.options.maxDate);
+            minDate = that.parseDate(that.options.minDate);
+            maxDate = that.parseDate(that.options.maxDate);
             
             // set min and max date values
             // if not provided in options default minDate to 1/1/(-5 years) and maxDate to 12/31/(+5 years) of next year
@@ -309,7 +315,7 @@
             }
 
             that.showTodayDate = that.options.showTodayDate;
-            that.todayDateDisplay = formatDate(now, that.options.todayDateFormat);
+            that.todayDateDisplay = that.formatDate(now, that.options.todayDateFormat);
 
             var defaultDate = getDefaultDate();
             
@@ -337,7 +343,7 @@
             }
 
             // if date is valid and in range, build calendar if month or year changed
-            var date = parseDate(that.targetText);
+            var date = that.parseDate(that.targetText);
             if(!date || !isDateInRange(date)) {
                 return;
             }
@@ -358,7 +364,7 @@
             
             // update target with the current selected date if the target text is not a valid date
             var targetValue = jQueryTargetValue();
-            var date = parseDate(targetValue);
+            var date = that.parseDate(targetValue);
             var targetIsEmpty = (targetValue === null || targetValue.length === 0);
             var targetIsInvalid = !date || !isDateInRange(date);
             
@@ -455,7 +461,7 @@
         };
 
         this.dateDisplay = function (cellData) {
-            return formatDate(cellData.date, 'DD');
+            return that.formatDate(cellData.date, 'DD');
         };
 
         this.dateSelect = function (cellData) {
@@ -578,7 +584,7 @@
                 return;
             }
 
-            var date = parseDate(dateToSelect);
+            var date = that.parseDate(dateToSelect);
             if (date && isDateInRange(date)) {
                 that.dateSelect(createCellData(date));
             }
@@ -604,7 +610,7 @@
             }
 
             // try parsing the 'defaultDate' from options
-            var date = parseDate(defaultDate);
+            var date = that.parseDate(defaultDate);
             if (date && isDateInRange(date)) {
                 return date;
             }
@@ -666,8 +672,8 @@
             var monthPlusOne = month + 1;
             var leadingZero = monthPlusOne < 10 ? '0' : '';
             
-            if (parseInt(year + leadingZero + monthPlusOne) < parseInt(formatDate(minDate, 'YYYYMM')) ||
-                parseInt(year + leadingZero + monthPlusOne) > parseInt(formatDate(maxDate, 'YYYYMM'))) {
+            if (parseInt(year + leadingZero + monthPlusOne) < parseInt(that.formatDate(minDate, 'YYYYMM')) ||
+                parseInt(year + leadingZero + monthPlusOne) > parseInt(that.formatDate(maxDate, 'YYYYMM'))) {
                 
                 return false;
             }
@@ -888,28 +894,26 @@
         }
 
 
-        function parseDate(value) {
+        this.parseDate = function (value) {
             var mom = moment(value, that.options.dateFormat);
             if (!mom.isValid()) {
                 return null;
             }
 
             return mom.toDate();
-        }
+        };
 
-        function formatDate(date, format) {
+        this.formatDate = function (date, format) {
+            // This method is added to the $formatters collection. So this method will be called before
+            // the options property is initialized. So fallback to defaultOptions.dateFormat
+            var dateFormat = format || that.options.dateFormat || defaultOptions.dateFormat;
             var mom = moment(date);
 
             if (!mom.isValid()) {
-                return;
+                return '';
             }
 
-            // use the format argument if provided
-            if (angular.isString(format)) {
-                return mom.format(format);
-            }
-
-            return mom.format(that.options.dateFormat);
+            return mom.format(dateFormat);
         }
 
         function isDateInRange(date) {
@@ -998,7 +1002,7 @@
                 return;
             }
 
-            var formattedDate = formatDate(that.selectedData.date);
+            var formattedDate = that.formatDate(that.selectedData.date);
 
             // textModelCtrl will be null if ng-model directive 
             // is not applied to the input element or may be the target is a non-input div, span etc.
