@@ -3,18 +3,28 @@
 
     angular
         .module('mainApp', ['datepickerLightModule', 'ngSanitize'])
-        .controller('MainCtrl', function(){
-            // since we are loading example html using ng-include
-            // need to call Prism.highlightElement after the content is loaded
-            this.prism = function() {
-                $('code.language-markup:not([prismjs-done]), code.language-javascript:not([prismjs-done])')
-                .each(function(){
-                    var $this = $(this);
-                    Prism.highlightElement($this[0]);
-                    $this.attr('prismjs-done', true);
-                });
+        .directive('ngPrism', function() {
+            return {
+                restrict: 'A',
+                link: function (scope, element) {
+                    element.ready(function () {
+                        Prism.highlightElement(element[0]);
+                    });
+                }
             };
         })
+        // .controller('MainCtrl', function(){
+        //     // since we are loading example html using ng-include
+        //     // need to call Prism.highlightElement after the content is loaded
+        //     this.prism = function() {
+        //         $('code.language-markup:not([prismjs-done]), code.language-javascript:not([prismjs-done])')
+        //         .each(function(){
+        //             var $this = $(this);
+        //             Prism.highlightElement($this[0]);
+        //             $this.attr('prismjs-done', true);
+        //         });
+        //     };
+        // })
         .controller('OnFocusCtrl', OnFocusCtrl)
         .controller('InlineCtrl', InlineCtrl)
         .controller('InlineDisabledDatesCtrl', InlineDisabledDatesCtrl)

@@ -4,8 +4,17 @@
 <!--[if IE 7]> <html lang="en" class="ie7"> <![endif]-->
 <!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
 <!--[if IE 9 ]> <html lang="en" class="ie9"> <![endif]-->
-<!--[if (gt IE 9)|!(IE)]><!--><html lang="en"><!--<![endif]-->
-<!--[if !IE]><!--><html lang="en"><script>if(/*@cc_on!@*/false){document.documentElement.className+='ie10';}</script><!--<![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!-->
+<html lang="en">
+<!--<![endif]-->
+<!--[if !IE]><!-->
+<html lang="en">
+<!--<script type="text/javascript">
+    if (/*@cc_on!@*/false) { 
+        document.documentElement.className += 'ie10'; 
+    }
+</script>-->
+<!--<![endif]-->
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
@@ -17,7 +26,7 @@
     <link rel="stylesheet" href="assets/normalize.css">
     <link rel="stylesheet" href="assets/bootstrap.css" />
 
-    <link rel="stylesheet" href="assets/main.css">
+    <link rel="stylesheet" href="assets/main.css?ts=20170527">
     <link rel="stylesheet" href="assets/prism-okaidia.css">
     <link rel="stylesheet" href="assets/angular-datepicker-light.css" />
     <link rel="stylesheet" href="assets/app.css" />
@@ -36,33 +45,9 @@
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 </head>
-<body ng-app="mainApp" ng-controller="MainCtrl as ctrl">
-    <div class="sidebar">
-        <header class="header" role="banner">
-            <a href="http://www.vickram.me/"><img id="blog" class="logo" src="images/VS2015-180.png"></a>
-            <h1 class="title"><a href="http://www.vickram.me/" style="text-decoration:none">Vickram Ravichandran</a></h1>
-            <p class="description"></p>
-            <div class="separator"></div>
-            <nav class="main-nav" role="navigation">
-                <ul>
-                    <li><a class="" href="http://www.vickram.me/">Home</a></li>
-                </ul>
-            </nav>
-            <div class="social-icons">
-                <a href="https://github.com/vickramravichandran/angular-datepicker-light" class="icon icon-github-circled"></a>
-                <a href="https://www.linkedin.com/in/vickramravichandran" class="icon icon-linkedin"></a>
-            </div>
-
-            <div class="npm-links">
-                <div>
-                    <code>npm i angular-datepicker-light</code>
-                </div>
-                <div style="margin-top:5px">
-                    <code>bower i angular-datepicker-light</code>
-                </div>
-            </div>
-        </header>
-    </div>
+<body ng-app="mainApp">
+    
+    <div ng-include="'partials/sidebar.tpl.html'"></div>
 
     <div class="content">
         <main role="main">
@@ -77,41 +62,21 @@
 
                 <div class="container-fluid">
 
-                    <div class="row" ng-include="'partials/on-focus.tpl.html'" onload="ctrl.prism()"></div>
+                    <div class="row" ng-include="'partials/on-focus.tpl.html'"></div>
 
-                    <div class="row" ng-include="'partials/inline.tpl.html'" onload="ctrl.prism()"></div>
+                    <div class="row" ng-include="'partials/inline.tpl.html'"></div>
                     
-                    <div class="row" ng-include="'partials/inline-disabled-dates.tpl.html'" onload="ctrl.prism()"></div>
+                    <div class="row" ng-include="'partials/inline-disabled-dates.tpl.html'"></div>
                     
-                    <div class="row" ng-include="'partials/inline-other-month-dates.tpl.html'" onload="ctrl.prism()"></div>
+                    <div class="row" ng-include="'partials/inline-other-month-dates.tpl.html'"></div>
 
-                    <div class="row" ng-include="'partials/inline-custom-week-start.tpl.html'" onload="ctrl.prism()"></div>
+                    <div class="row" ng-include="'partials/inline-custom-week-start.tpl.html'"></div>
 
-                    <div class="row" ng-include="'partials/inline-div-target.tpl.html'" onload="ctrl.prism()"></div>
+                    <div class="row" ng-include="'partials/inline-div-target.tpl.html'"></div>
 
                 </div>
 
-                <div class="config-options" ng-controller="PluginOptionsCtrl as vm">
-                    <h2 id="options">Options</h2>
-                    <ul class="options">
-                        <li ng-repeat="(key, val) in vm.options">
-                            <h5>{{key}}</h5>
-                            <p ng-bind-html="val.doc"></p>
-                            <div ng-if="val.docArray">
-                                <ul>
-                                    <li ng-repeat="arr in val.docArray">
-                                        <span ng-repeat="(key, val) in arr">
-                                            <b>{{key}}:</b> {{val}}
-                                        </span>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="default">
-                                Default: {{val.def}}
-                            </div>
-                        </li>
-                    </ul>
-                </div>
+                <div ng-include="'partials/config-options.tpl.html'"></div>
 
             </article>
         </main>
