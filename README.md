@@ -6,7 +6,7 @@
 
 #### Requirements
 
-* Angular v1.5.3+
+* AngularJS v1.5.3+
 * Moment v2.12.0+
 
 <b>Demo:</b> http://demo.vickram.me/angular-datepicker-light/

@@ -3,12 +3,13 @@
   "version": "1.5.1",
   "description": "AngularJS datepicker plugin",
   "main": "angular-datepicker-light.js",
-  "homepage": "http://www.vickram.me/angular-datepicker-light-plugin/",
-  "author": "Vickram Ravichandran (http://vickram.me)",
+  "homepage": "http://www.vickram.me/angular-datepicker-light",
+  "author": "Vickram Ravichandran (http://www.vickram.me)",
   "license": "MIT",
   "keywords": [
     "angular",
-    "datepicker",
+    "angularJS",
+	"datepicker",
     "calendar",
     "directive",
     "plugin"
