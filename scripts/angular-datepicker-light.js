@@ -13,6 +13,7 @@
         factory(global.angular, global.moment);
     }
 }(this, function (angular, moment) {
+    'use strict';
 
     var internalService = new InternalService();
 
@@ -199,12 +200,32 @@
                         return;
                     }
 
-                    if(ctrl.container.has(event.target).length > 0) {
+                    if (_containerContainsTarget(event.target)) {
                         return;
                     }
 
                     ctrl.hide();
                 }
+            }
+
+            function _containerContainsTarget(target) {
+                // use native Node.contains
+                // https://developer.mozilla.org/en-US/docs/Web/API/Node/contains
+                if (angular.isFunction(ctrl.container[0].contains) &&
+                    ctrl.container[0].contains(target)) {
+
+                    return true;
+                }
+
+                // otherwise use .has() if jQuery is available
+                if (window.jQuery && angular.isFunction(ctrl.container.has) &&
+                    ctrl.container.has(target).length > 0) {
+
+                    return true;
+                }
+
+                // too bad
+                return false;
             }
 
             // cleanup on destroy
@@ -293,10 +314,10 @@
             // create an object array of month names
             // a simple simple string array will not work with ng-options
             that.monthNames = [];
-            for (i = 0; i <= 11; i++) {
+            for (var m = 0; m <= 11; m++) {
                 that.monthNames.push({
-                    index: i,
-                    name: monthNamesLong[i]
+                    index: m,
+                    name: monthNamesLong[m]
                 });
             }
 
@@ -320,8 +341,8 @@
             buildCalendar();
 
             // build years array
-            for (i = minDate.getFullYear() ; i <= maxDate.getFullYear() ; i++) {
-                that.validYears.push(i);
+            for (var y = minDate.getFullYear() ; y <= maxDate.getFullYear() ; y++) {
+                that.validYears.push(y);
             }
         };
   
