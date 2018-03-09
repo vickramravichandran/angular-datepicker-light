@@ -2,9 +2,30 @@ html {
 	font-size: initial;
 }
 
+/* .form-control, .btn-group-lg>.btn, .btn-lg, pre[class*="language-"] {
+  border-radius: 0px
+} */
+
+.form-control, .btn-group-lg>.btn, .btn-lg {
+	border-radius: 0px
+}
+
 h1.post-title {
 	font-size: 2.7em;
 	font-weight: bold;
+	background: rgba(255, 255, 255, 0) url(./../images/angularjs-logo.png) left center no-repeat;
+	background-size: 40px;
+	padding: 10px 0px 20px 45px;
+}
+
+@media (max-width: 480px) {
+	h1.post-title {
+		font-size: 2.1em;
+		background-image: none;
+		padding: 0px 0px 5px 0px;
+		/* background-size: 35px;
+		padding: 0px 0px 5px 38px; */
+	}
 }
 
 /*
@@ -17,28 +38,28 @@ div.code-container {
 	margin-top: 20px;
 }
 
-	div.code-container h6 {
-		margin-top: 10px;
-	}
+div.code-container h6 {
+	margin-top: 10px;
+}
 
 div.scenario {
 	margin-bottom: 30px;
 }
 
-	div.scenario input[type=text] {
-		display: inline-block;
-		width: 110px;
-		font-weight: bold;
-		/*        background-color: white;*/
-		background-color: rgb(255, 248, 182);
-	}
+div.scenario input[type=text] {
+	display: inline-block;
+	width: 110px;
+	font-weight: bold;
+	/*        background-color: white;*/
+	background-color: rgb(255, 248, 182);
+}
 
 div.scenario h3 {
 	margin-top: 20px;
 }
 
 div.config-options {
-	margin-top:20px;
+	margin-top: 20px;
 }
 
 div.config-options div.default {
@@ -46,22 +67,22 @@ div.config-options div.default {
 	font-style: italic;
 }
 
-div.config-options > ul {
+div.config-options>ul {
 	padding: 0px;
 }
 
-div.config-options > ul > li {
+div.config-options>ul>li {
 	padding: 8px;
 	list-style: none;
 	border-top: 1px solid #dddddd;
 	padding-bottom: 20px;
 }
 
-div.config-options > ul > li:nth-child(odd) {
+div.config-options>ul>li:nth-child(odd) {
 	background-color: #f6f6f6;
 }
 
-div.config-options > ul > li a {
+div.config-options>ul>li a {
 	color: blue;
 }
 
@@ -86,5 +107,5 @@ div.date-target {
 	height: 24px;
 	background-repeat: no-repeat;
 	background-position: top left;
-	background-image: url(images/calendar.png);
+	background-image: url(../images/calendar.png);
 }
