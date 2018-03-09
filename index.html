@@ -15,6 +15,7 @@
     }
 </script>-->
 <!--<![endif]-->
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
@@ -45,14 +46,30 @@
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 </head>
+
 <body ng-app="mainApp">
-    
+
     <div ng-include="'partials/sidebar.tpl.html'"></div>
 
     <div class="content">
         <main role="main">
             <article class="post" role="article" itemscope="" itemtype="http://schema.org/Article">
                 <h1 class="post-title">angular-datepicker-light</h1>
+
+                <div style="margin-top:5px;">
+                    <p>
+                        <a href="https://www.npmjs.com/package/angular-datepicker-light" rel="nofollow">
+                            <img src="https://img.shields.io/npm/v/angular-datepicker-light.svg?maxAge=3600&style=flat" alt="npm version" style="max-width:100%;">
+                        </a>
+                        <a href="https://www.npmjs.com/package/angular-datepicker-light" rel="nofollow">
+                            <img src="https://img.shields.io/npm/dm/angular-datepicker-light.svg?maxAge=3600&style=flat" alt="npm downloads" style="max-width:100%;">
+                        </a>
+                        <a href="https://github.com/vickramravichandran/angular-datepicker-light/blob/master/LICENSE">
+                            <img src="https://img.shields.io/github/license/vickramravichandran/angular-datepicker-light.svg?maxAge=3600&style=flat"
+                                alt="GitHub license" style="max-width:100%;">
+                        </a>
+                    </p>
+                </div>
 
                 <div style="margin-top:20px; padding: 10px 0px">
                     <a role="button" class="btn btn-primary btn-lg" href="https://github.com/vickramravichandran/angular-datepicker-light/archive/demo.zip">Download</a>
@@ -65,9 +82,9 @@
                     <div class="row" ng-include="'partials/on-focus.tpl.html'"></div>
 
                     <div class="row" ng-include="'partials/inline.tpl.html'"></div>
-                    
+
                     <div class="row" ng-include="'partials/inline-disabled-dates.tpl.html'"></div>
-                    
+
                     <div class="row" ng-include="'partials/inline-other-month-dates.tpl.html'"></div>
 
                     <div class="row" ng-include="'partials/inline-custom-week-start.tpl.html'"></div>
@@ -77,9 +94,9 @@
                 </div>
 
                 <div ng-include="'partials/config-options.tpl.html'"></div>
-                
+
                 <div ng-include="'partials/post-comments.tpl.html'"></div>
-                
+
             </article>
         </main>
     </div>
