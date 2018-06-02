@@ -66,15 +66,15 @@
             ctrl.target = element;
 
             // wait for page load before initialization to avoid any missing selectors
-            $timeout(function(){
+            $timeout(function () {
                 // execute the options expression
                 var options = ctrl.options() || {};
                 ctrl.init(angular.extend({}, defaultOptions, options));
-                
+
                 initContainer(html);
                 wireupEvents();
             });
-            
+
             function initContainer(template) {
                 var templateFn = $compile(template);
                 ctrl.container = templateFn(scope);
@@ -109,26 +109,26 @@
                     ctrl.options.inline.append(ctrl.container);
                     return;
                 }
-                
+
                 // container will be positioned absolutely
                 ctrl.container.addClass('datepicker-absolute-container');
                 if (ctrl.options.appendToBody) {
                     $document.find('body').append(ctrl.container);
                     return;
                 }
-                
+
                 ctrl.target.after(ctrl.container);
             }
 
             function wireupEvents() {
-            
-                $document.ready(function(){
+
+                $document.ready(function () {
                     // activate all inline date pickers and call ready callback
                     scope.$evalAsync(function () {
                         if (ctrl.isInline()) {
                             ctrl.activate();
                         }
-                        
+
                         ctrl.ready();
                     });
                 });
@@ -199,7 +199,7 @@
                         return;
                     }
 
-                    if(ctrl.container.has(event.target).length > 0) {
+                    if (ctrl.container.has(event.target).length > 0) {
                         return;
                     }
 
@@ -211,7 +211,7 @@
             var destroyFn = scope.$on('$destroy', function () {
                 if (ctrl.container) {
                     ctrl.container.remove();
-                    ctrl.container = null; 
+                    ctrl.container = null;
                 }
 
                 destroyFn();
@@ -263,7 +263,7 @@
 
             minDate = parseDate(that.options.minDate);
             maxDate = parseDate(that.options.maxDate);
-            
+
             // set min and max date values
             // if not provided in options default minDate to 1/1/(-5 years) and maxDate to 12/31/(+5 years) of next year
             if (!minDate) {
@@ -312,20 +312,20 @@
             that.todayDateDisplay = formatDate(now, that.options.todayDateFormat);
 
             var defaultDate = getDefaultDate();
-            
+
             that.selectedMonth = defaultDate.getMonth();
             that.selectedYear = defaultDate.getFullYear();
             that.selectedData = createCellData(defaultDate);
-            
+
             buildCalendar();
 
             // build years array
-            for (i = minDate.getFullYear() ; i <= maxDate.getFullYear() ; i++) {
+            for (i = minDate.getFullYear(); i <= maxDate.getFullYear(); i++) {
                 that.validYears.push(i);
             }
         };
-  
-        
+
+
         this.tryApplyDateFromTarget = function () {
             // textModelCtrl will be null if ng-model directive is not applied to the input element 
             // or the target is a non-input div, span etc. in which case we get the element using jquery
@@ -333,12 +333,12 @@
                 that.targetText = jQueryTargetValue();
             }
             else {
-                that.targetText = that.textModelCtrl.$viewValue;    
+                that.targetText = that.textModelCtrl.$viewValue;
             }
 
             // if date is valid and in range, build calendar if month or year changed
             var date = parseDate(that.targetText);
-            if(!date || !isDateInRange(date)) {
+            if (!date || !isDateInRange(date)) {
                 return;
             }
 
@@ -352,19 +352,19 @@
 
             applySelection(date, true);
         };
-        
+
         this.activate = function () {
             internalService.setActiveInstanceId(that.instanceId);
-            
+
             // update target with the current selected date if the target text is not a valid date
             var targetValue = jQueryTargetValue();
             var date = parseDate(targetValue);
             var targetIsEmpty = (targetValue === null || targetValue.length === 0);
             var targetIsInvalid = !date || !isDateInRange(date);
-            
+
             if ((targetIsEmpty && that.options.setTargetIfEmpty) ||
                 (targetIsInvalid && that.options.setTargetIfInvalid)) {
-                
+
                 tryUpdateTarget();
             }
             else {
@@ -381,8 +381,8 @@
 
             that.show();
         };
-        
-        this.ready = function() {
+
+        this.ready = function () {
             safeCallback(that.options.ready, methods);
         };
 
@@ -555,24 +555,24 @@
             return false;
         };
 
-        
-        this.getDate = function() {
+
+        this.getDate = function () {
             if (that.selectedData && that.selectedData.date) {
                 return that.selectedData.date;
             }
         };
-        
-        this.setDate = function(dateToSelect) {
+
+        this.setDate = function (dateToSelect) {
             if (!dateToSelect) {
                 return;
             }
-            
+
             // is it a Date object?
             if (angular.isDate(dateToSelect) && isDateInRange(dateToSelect)) {
                 that.dateSelect(createCellData(dateToSelect));
                 return;
             }
-            
+
             // parse string
             if (!angular.isString(dateToSelect)) {
                 return;
@@ -583,21 +583,21 @@
                 that.dateSelect(createCellData(date));
             }
         };
-        
+
 
         function getDefaultDate() {
             var defaultDate = that.options.defaultDate;
-            
+
             // if defaultDate is not provided default to today
             if (!defaultDate) {
                 return that.todayDate;
             }
-            
+
             // is it a date instance and within range?
             if (angular.isDate(defaultDate) && isDateInRange(defaultDate)) {
                 return defaultDate;
             }
-            
+
             // is it a string?
             if (!angular.isString(defaultDate)) {
                 return that.todayDate;
@@ -611,7 +611,7 @@
 
             return that.todayDate;
         }
-        
+
         function getPreviousMonthYear(month, year) {
             var monthCopy = month,
                 yearCopy = year;
@@ -622,14 +622,14 @@
                 month = 11;
                 year--;
             }
-            
+
             if (isMonthYearInRange(month, year)) {
                 return {
                     month: month,
                     year: year
                 };
             }
-            
+
             return {
                 month: monthCopy,
                 year: yearCopy
@@ -653,28 +653,28 @@
                     year: year
                 };
             }
-            
+
             return {
                 month: monthCopy,
                 year: yearCopy
-            };            
+            };
         }
 
         // returns true if the month and year are within min date and max date
-        function isMonthYearInRange (month, year) {
+        function isMonthYearInRange(month, year) {
             // adjust month to 1-based because format date returns month as 1-based
             var monthPlusOne = month + 1;
             var leadingZero = monthPlusOne < 10 ? '0' : '';
-            
+
             if (parseInt(year + leadingZero + monthPlusOne) < parseInt(formatDate(minDate, 'YYYYMM')) ||
                 parseInt(year + leadingZero + monthPlusOne) > parseInt(formatDate(maxDate, 'YYYYMM'))) {
-                
+
                 return false;
             }
-            
+
             return true;
         }
-        
+
         // sets that.selectedMonth and that.selectedYear if different.
         // returns true if the properties were set
         function setMonthYear(date) {
@@ -797,7 +797,7 @@
 
             // is cbRetVal.selected is explicitly set to true?
             cellData.selected = (cbRetVal.selected === true && cellData.enabled);
-            
+
             // css class to apply to the date <td>
             cellData.cssClass = cbRetVal.cssClass;
 
@@ -821,7 +821,7 @@
             if (!angular.isDate(dateToSelect)) {
                 return;
             }
-            
+
             // find the cell data that is enabled and not already selected
             return calendarItems.find(function (cellData) {
                 return areDatesEqual(cellData.date, dateToSelect);
@@ -919,7 +919,7 @@
             var momMaxDate = moment(maxDate);
 
             return momDate.isSameOrAfter(momMinDate, 'd') &&
-                   momDate.isSameOrBefore(momMaxDate, 'd');
+                momDate.isSameOrBefore(momMaxDate, 'd');
         }
 
         function areDatesEqual(date1, date2) {
@@ -967,13 +967,13 @@
                 of: that.target,
                 collision: 'none flip'
             };
-            
+
             var pos = angular.extend({}, defaultPosition, that.options.positionUsing);
-            
+
             // jquery.ui position() requires the container to be visible to calculate its position.
             that.containerVisible = true; // used in the template to set ng-show.
             that.container.css({ 'visibility': 'hidden' });
-            $timeout(function(){
+            $timeout(function () {
                 that.container.position(pos);
                 that.container.css({ 'visibility': 'visible' });
             });
@@ -984,12 +984,12 @@
 
             var scrollLeft = $document[0].body.scrollLeft || $document[0].documentElement.scrollLeft || $window.pageXOffset;
             var scrollTop = $document[0].body.scrollTop || $document[0].documentElement.scrollTop || $window.pageYOffset;
-            
+
             that.container.css({
                 'left': rect.left + scrollLeft + 'px',
                 'top': rect.top + rect.height + scrollTop + 3 + 'px'
             });
-            
+
             that.containerVisible = true;
         }
 
@@ -1014,10 +1014,10 @@
                 that.textModelCtrl.$render();
             }
         }
-        
-        function jQueryTargetValue (value) {
+
+        function jQueryTargetValue(value) {
             var targetTextFn;
-            
+
             // ng-model is not applied or its not an input element
             // perhaps a <div>, <span> etc.
             if (that.target[0].tagName.toLowerCase() === 'input') {
@@ -1026,7 +1026,7 @@
             else {
                 targetTextFn = that.target.html.bind(that.target);
             }
-            
+
             // getter
             if (!value) {
                 return targetTextFn().trim();
@@ -1045,21 +1045,21 @@
                         year: that.selectedYear
                     };
                 },
-                
+
                 gotoMonthYear: function (month, year) {
                     // month starts at 0
                     if (isMonthYearInRange(month - 1, year)) {
                         that.selectedMonth = month - 1;
                         that.selectedYear = year;
-                        
+
                         buildCalendar();
                     }
                 },
-                
+
                 getDate: function () {
                     return that.getDate();
                 },
-            
+
                 setDate: function (date) {
                     that.setDate(date);
                 },
@@ -1071,15 +1071,15 @@
         })();
     }
 
-    function InternalService () {
+    function InternalService() {
         var that = this;
-        var pluginCtrls  = [];
+        var pluginCtrls = [];
         var instanceCount = 0;
         var activeInstanceId = 0;
 
         this.addDirectiveCtrl = function (ctrl) {
             if (ctrl) {
-                pluginCtrls .push(ctrl);
+                pluginCtrls.push(ctrl);
             }
         };
 
@@ -1093,7 +1093,7 @@
         };
 
         this.hideAllInactive = function () {
-            angular.forEach(pluginCtrls , function (ctrl) {
+            angular.forEach(pluginCtrls, function (ctrl) {
                 // hide if this is not the active instance
                 if (!ctrl.isInline() && ctrl.instanceId !== activeInstanceId) {
                     ctrl.hide();
@@ -1204,12 +1204,12 @@
         ready: {
             def: 'noop',
             doc: 'Callback after the datepicker is initialized and ready. The function receives an object with the following methods:',
-            docArray: [    
-                {'getMonthYear': 'Returns an object with the selected month and year.'},
-                {'gotoMonthYear (month, year)': 'Sets the selected month and year. The month and year must be within minDate and maxDate.'},
-                {'getDate': 'Returns the selected date.'},
-                {'setDate (date)': 'Sets the selected date in the datepicker. Set to an actual Date object or as a string in the current dateFormat. The date must be within minDate and maxDate.'},
-                {'refresh': 'Rebuilds the datepicker.'}
+            docArray: [
+                { 'getMonthYear': 'Returns an object with the selected month and year.' },
+                { 'gotoMonthYear (month, year)': 'Sets the selected month and year. The month and year must be within minDate and maxDate.' },
+                { 'getDate': 'Returns the selected date.' },
+                { 'setDate (date)': 'Sets the selected date in the datepicker. Set to an actual Date object or as a string in the current dateFormat. The date must be within minDate and maxDate.' },
+                { 'refresh': 'Rebuilds the datepicker.' }
             ]
         },
         monthYearChanged: {
@@ -1227,12 +1227,12 @@
         renderDate: {
             def: 'noop',
             doc: 'Callback when the datepicker is being rendered. This is called for each date in the datepicker. The function receives an object with "date" as parameter. Return an object with the following properties:',
-            docArray: [ 
-                {'cssClass': 'The CSS class to apply to the date cell.'},
-                {'enabled': 'Set to false to disable a date.'},
-                {'selected': 'Set to true to select a date.'},
-                {'tooltip': 'Tooltip for the date html table cell.'},
-                {'data': 'Set to any arbitrary data on the date cell.'}
+            docArray: [
+                { 'cssClass': 'The CSS class to apply to the date cell.' },
+                { 'enabled': 'Set to false to disable a date.' },
+                { 'selected': 'Set to true to select a date.' },
+                { 'tooltip': 'Tooltip for the date html table cell.' },
+                { 'data': 'Set to any arbitrary data on the date cell.' }
             ]
         },
         beforeDateSelect: {
@@ -1271,7 +1271,7 @@
     html += '                           title="Previous Month"></a>';
     html += '                        <a class="next" ';
     html += '                           ng-click="ctrl.gotoNextMonth(ctrl.selectedMonth, ctrl.selectedYear)"';
-    html += '                           href="javascript:void(0)"' ;
+    html += '                           href="javascript:void(0)"';
     html += '                           title="Next Month"></a>';
     html += '                    </div>';
     html += '                </td>';

@@ -11,10 +11,12 @@
         .controller('InlineDivTargetCtrl', InlineDivTargetCtrl)
         .controller('PositionUsingJQueryCtrl', PositionUsingJQueryCtrl);
 
+    var TODAY = moment(new Date()).format('MM/DD/YYYY');
+
     // on focus
     function OnFocusCtrl() {
         var vm = this;
-        vm.date = moment(new Date()).format('MM/DD/YYYY');
+        vm.date = TODAY;
         vm.datepickerOptions = {
             altTarget: $("#calendarIcon")
         };
@@ -24,7 +26,7 @@
     function InlineCtrl() {
         var vm = this;
 
-        vm.date = new Date();
+        vm.date = TODAY;
         vm.datepickerOptions = {
             inline: true,
             showTodayDate: false,
@@ -36,7 +38,7 @@
     function InlineDisabledDatesCtrl() {
         var vm = this;
 
-        vm.date = new Date();
+        vm.date = TODAY;
         vm.datepickerOptions = {
             inline: true,
             containerCssClass: "datepicker-container-inline",
@@ -60,7 +62,7 @@
     function InlineOtherMonthDatesCtrl() {
         var vm = this;
 
-        vm.date = new Date();
+        vm.date = TODAY;
         vm.datepickerOptions = {
             inline: true,
             showOtherMonthDates: true,
@@ -72,7 +74,7 @@
     function InlineCustomWeekStartCtrl() {
         var vm = this;
 
-        vm.date = new Date();
+        vm.date = TODAY;
         vm.datepickerOptions = {
             inline: true,
             firstDayOfWeek: 3,
@@ -92,7 +94,8 @@
 
     function PositionUsingJQueryCtrl() {
         var vm = this;
-        vm.date = new Date();
+
+        vm.date = TODAY;
         vm.datepickerOptions = {
             positionUsingJQuery: true,
             altTarget: $("#calendarIcon-2")
