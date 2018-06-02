@@ -3,7 +3,7 @@
 
     angular
         .module('mainApp', ['datepickerLightModule', 'ngSanitize'])
-        .directive('ngPrism', function() {
+        .directive('ngPrism', function () {
             return {
                 restrict: 'A',
                 link: function (scope, element) {
@@ -33,11 +33,13 @@
         .controller('InlineDivTargetCtrl', InlineDivTargetCtrl)
         .controller('PluginOptionsCtrl', PluginOptionsCtrl);
 
+    var TODAY = moment(new Date()).format('MM/DD/YYYY');
+
     // on focus
     function OnFocusCtrl() {
         var vm = this;
-        
-        vm.date = moment(new Date()).format('MM/DD/YYYY');
+
+        vm.date = TODAY;
         vm.datepickerOptions = {
             altTarget: $("#calendarIcon")
         };
@@ -47,7 +49,7 @@
     function InlineCtrl() {
         var vm = this;
 
-        vm.date = new Date();
+        vm.date = TODAY;
         vm.datepickerOptions = {
             inline: true,
             containerCssClass: "datepicker-container-inline"
@@ -58,7 +60,7 @@
     function InlineDisabledDatesCtrl() {
         var vm = this;
 
-        vm.date = new Date();
+        vm.date = TODAY;
         vm.datepickerOptions = {
             inline: true,
             containerCssClass: "datepicker-container-inline",
@@ -74,7 +76,7 @@
     function InlineOtherMonthDatesCtrl() {
         var vm = this;
 
-        vm.date = new Date();
+        vm.date = TODAY;
         vm.datepickerOptions = {
             inline: true,
             showOtherMonthDates: true,
@@ -86,7 +88,7 @@
     function InlineCustomWeekStartCtrl() {
         var vm = this;
 
-        vm.date = new Date();
+        vm.date = TODAY;
         vm.datepickerOptions = {
             inline: true,
             firstDayOfWeek: 3, // week starts on Wednesday
@@ -97,7 +99,7 @@
     function InlineDivTargetCtrl() {
         var vm = this;
 
-        vm.date = new Date();
+        vm.date = TODAY;
         vm.datepickerOptions = {
             inline: true,
             containerCssClass: "datepicker-container-inline",
